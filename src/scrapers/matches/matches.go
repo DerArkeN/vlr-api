@@ -109,48 +109,8 @@ func scrapeMatches(url string) ([]*Match, error) {
 	return matches, nil
 }
 
-func DetermineOffset() int16 {
-	// test := time.Now()
-
-	loc, err := time.LoadLocation("PST")
-	if err != nil {
-		log.Println("Error loading location: ", err)
-	}
-	log.Println("UTC time", time.Now())
-	log.Println("Local time", time.Now().In(loc))
-
-	return 0
-}
-
-func AbbreviationToLocation(abbreviation string) (*time.Location, error) {
-	// Map the time zone abbreviations to their corresponding locations
-	zoneMap := map[string]string{
-		"CEST": "Europe/Paris",
-		"PDT":  "America/Los_Angeles",
-		// Add more mappings as needed
-	}
-
-	// Check if the abbreviation exists in the map
-	locationName, ok := zoneMap[abbreviation]
-	if !ok {
-		return nil, fmt.Errorf("unknown time zone abbreviation: %s", abbreviation)
-	}
-
-	// Load the location using the time zone identifier
-	location, err := time.LoadLocation(locationName)
-	if err != nil {
-		return nil, err
-	}
-
-	return location, nil
-}
-
 func (m *Match) ConvertMatchTime() (time.Time, error) {
-	offset := DetermineOffset()
-
 	matchTime, err := time.Parse("Mon, January 2, 2006, 15:04 PM", m.Date+", "+m.Time)
-	matchTime = matchTime.Add(time.Hour * time.Duration(offset))
-
 	if err != nil {
 		return time.Time{}, err
 	}
