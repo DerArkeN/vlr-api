@@ -1,53 +1,97 @@
 package api
 
 import (
+	"errors"
 	"time"
 
-	scraper_matches "github.com/derarken/vlr-api/src/scrapers/matches"
+	"github.com/derarken/vlr-api/proto"
+	"github.com/derarken/vlr-api/src/customErrors"
+	scraper_location "github.com/derarken/vlr-api/src/scraper/location"
+	scraper_matches "github.com/derarken/vlr-api/src/scraper/matches"
 )
 
 const (
-	MatchIdsPath = "/matchIds?status=%s&from=%s&to=%s"
+	VLR_STATUS_LIVE     = "LIVE"
+	VLR_STATUS_UPCOMING = "Upcoming"
 )
 
-type Status string
+func GetMatchIds(status proto.Status, from time.Time, to time.Time) ([]string, error) {
+	switch status {
+	case proto.Status_STATUS_LIVE:
+		return getLiveMatchIds()
+	case proto.Status_STATUS_UPCOMING:
+		return getUpcomingMatchIds(from, to)
+	}
 
-const (
-	STATUS_LIVE      Status = "LIVE"
-	STATUS_UPCOMING  Status = "UPCOMING"
-	STATUS_COMPLETED Status = "COMPLETED"
-)
-
-type MatchIds struct {
-	Ids []string `json:"ids"`
+	return nil, errors.New("invalid status")
 }
 
-func GetMatchIds(status Status, from time.Time, to time.Time) (*MatchIds, error) {
-	result := &MatchIds{}
-	switch status {
-	case STATUS_LIVE:
-		matches, err := scraper_matches.ScrapeMatches(1)
+func getLiveMatchIds() ([]string, error) {
+	var ids []string
+
+	matches, err := scraper_matches.ScrapeMatches(1)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, match := range matches {
+		if match.Status.Status != VLR_STATUS_LIVE {
+			continue
+		}
+
+		ids = append(ids, match.MatchId)
+	}
+
+	return ids, nil
+}
+
+func getUpcomingMatchIds(from time.Time, to time.Time) ([]string, error) {
+	var ids []string
+
+	loc, err := scraper_location.GetLocation()
+	if err != nil {
+		return nil, err
+	}
+
+	var matches []*scraper_matches.Match
+	page := 1
+	for {
+		newMatches, err := scraper_matches.ScrapeMatches(page)
+		if err == customErrors.ErrNoMatches {
+			break
+		}
+		if err != nil {
+			return nil, err
+		}
+		matches = append(matches, newMatches...)
+
+		lastMatch := newMatches[len(newMatches)-1]
+		matchTime, err := lastMatch.GetUtcTime(loc)
 		if err != nil {
 			return nil, err
 		}
 
-		for _, match := range matches {
-			if match.Status.Status != "LIVE" {
-				continue
-			}
+		if matchTime.After(to) {
+			break
+		}
 
-			matchTime, err := match.ConvertMatchTime()
-			if err != nil {
-				return nil, err
-			}
+		page++
+	}
 
-			if !((matchTime.After(from) || matchTime == from) && (matchTime.Before(to) || matchTime == to)) {
-				continue
-			}
+	for _, match := range matches {
+		if match.Status.Status != VLR_STATUS_UPCOMING {
+			continue
+		}
 
-			result.Ids = append(result.Ids, match.Id)
+		matchTime, err := match.GetUtcTime(loc)
+		if err != nil {
+			return nil, err
+		}
+
+		if matchTime.After(from) && matchTime.Before(to) {
+			ids = append(ids, match.MatchId)
 		}
 	}
 
-	return result, nil
+	return ids, nil
 }

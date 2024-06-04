@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+package vlr.api;
+option go_package = "github.com/derarken/vlr-api/proto";
+
+import "google/protobuf/timestamp.proto";
+
+service Api {
+    rpc GetMatchIds(GetMatchIdsRequest) returns (GetMatchIdsResponse);
+}
+
+enum Status {
+    STATUS_UNSPECIFIED = 0;
+    STATUS_LIVE = 1;
+    STATUS_UPCOMING = 2;
+    STATUS_FINISHED = 3;
+}
+
+// Returns a list of match ids that match the given criteria
+// Timestamps in UTC
+// If the status is STATUS_LIVE, the from and to fields are ignored
+// If the status is STATUS_UPCOMING or STATUS_FINISHED, the from and to fields are required
+message GetMatchIdsRequest {
+    Status status = 1;
+    google.protobuf.Timestamp from = 2;
+    google.protobuf.Timestamp to = 3;
+}
+
+message GetMatchIdsResponse {
+    repeated string match_ids = 1;
+}

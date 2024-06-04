@@ -11,10 +11,10 @@ import (
 )
 
 type Match struct {
-	Id     string
-	Status *Status `selector:".match-item-eta"`
-	Date   string  `selector:".match-item-date"`
-	Time   string  `selector:".match-item-time"`
+	MatchId string
+	Status  *Status `selector:".match-item-eta"`
+	Date    string  `selector:".match-item-date"`
+	Time    string  `selector:".match-item-time"`
 	// Teams  []*Team `selector:".match-item-vs > .match-item-vs-team"`
 	// Note   string  `selector:".match-item-note"`
 	// Vods   []*Vod  `selector:".match-item-vod"`
@@ -38,12 +38,12 @@ type Status struct {
 // }
 
 // Fetches https://vlr.gg/matches/results
-func ScrapeResults(page int16) ([]*Match, error) {
+func ScrapeResults(page int) ([]*Match, error) {
 	return scrapeMatches("https://vlr.gg/matches/results/?page=" + fmt.Sprint(page))
 }
 
 // Fetches https://vlr.gg/matches
-func ScrapeMatches(page int16) ([]*Match, error) {
+func ScrapeMatches(page int) ([]*Match, error) {
 	return scrapeMatches("https://vlr.gg/matches/?page=" + fmt.Sprint(page))
 }
 
@@ -84,7 +84,7 @@ func scrapeMatches(url string) ([]*Match, error) {
 					match.Date = currDate
 
 					// head attribute can't be unmarshalled
-					match.Id = matchEntry.Attr("href")[1:]
+					match.MatchId = matchEntry.Attr("href")[1:]
 
 					// // event needs to be split since it contains the stage as well
 					// strings := strings.Split(match.Event, "\t")
@@ -109,10 +109,17 @@ func scrapeMatches(url string) ([]*Match, error) {
 	return matches, nil
 }
 
-func (m *Match) ConvertMatchTime() (time.Time, error) {
-	matchTime, err := time.Parse("Mon, January 2, 2006, 15:04 PM", m.Date+", "+m.Time)
+func (m *Match) GetUtcTime(location *time.Location) (time.Time, error) {
+	if m.Time == "TBD" {
+		m.Time = "00:00 AM"
+	}
+
+	matchTime, err := time.ParseInLocation("Mon, January 2, 2006, 15:04 PM", m.Date+", "+m.Time, location)
 	if err != nil {
 		return time.Time{}, err
 	}
+
+	matchTime = matchTime.UTC()
+
 	return matchTime, nil
 }

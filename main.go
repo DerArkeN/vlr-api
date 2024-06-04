@@ -4,11 +4,12 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/derarken/vlr-api/proto"
 	"github.com/derarken/vlr-api/src/api"
 )
 
 func main() {
-	ids, err := api.GetMatchIds(api.STATUS_LIVE, time.Now(), time.Now().Add(time.Hour*4))
+	ids, err := api.GetMatchIds(proto.Status_STATUS_UPCOMING, time.Now().Add(time.Hour*24*30), time.Now().Add(time.Hour*24*60))
 	if err != nil {
 		panic(err)
 	}
