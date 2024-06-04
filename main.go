@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	ids, err := api.GetMatchIds(proto.Status_STATUS_UPCOMING, time.Now().Add(time.Hour*24*30), time.Now().Add(time.Hour*24*60))
+	ids, err := api.GetMatchIds(proto.Status_STATUS_COMPLETED, time.Now().Add(-24*time.Hour), time.Now())
 	if err != nil {
 		panic(err)
 	}

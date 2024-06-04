@@ -10,42 +10,35 @@ import (
 	scraper_matches "github.com/derarken/vlr-api/src/scraper/matches"
 )
 
+type vlrStatus string
+
 const (
-	VLR_STATUS_LIVE     = "LIVE"
-	VLR_STATUS_UPCOMING = "Upcoming"
+	VLR_STATUS_LIVE      vlrStatus = "LIVE"
+	VLR_STATUS_UPCOMING  vlrStatus = "Upcoming"
+	VLR_STATUS_COMPLETED vlrStatus = "Completed"
 )
 
 func GetMatchIds(status proto.Status, from time.Time, to time.Time) ([]string, error) {
+	if from.After(to) {
+		return nil, errors.New("from time is after to time")
+	}
+
 	switch status {
 	case proto.Status_STATUS_LIVE:
-		return getLiveMatchIds()
+		return getUpcomingMatchIds(from, to, VLR_STATUS_LIVE)
 	case proto.Status_STATUS_UPCOMING:
-		return getUpcomingMatchIds(from, to)
+		return getUpcomingMatchIds(from, to, VLR_STATUS_UPCOMING)
+	case proto.Status_STATUS_COMPLETED:
+		if to.After(time.Now()) {
+			return nil, errors.New("to time is in the future")
+		}
+		return getCompletedMatchIds(from, to)
 	}
 
 	return nil, errors.New("invalid status")
 }
 
-func getLiveMatchIds() ([]string, error) {
-	var ids []string
-
-	matches, err := scraper_matches.ScrapeMatches(1)
-	if err != nil {
-		return nil, err
-	}
-
-	for _, match := range matches {
-		if match.Status.Status != VLR_STATUS_LIVE {
-			continue
-		}
-
-		ids = append(ids, match.MatchId)
-	}
-
-	return ids, nil
-}
-
-func getUpcomingMatchIds(from time.Time, to time.Time) ([]string, error) {
+func getUpcomingMatchIds(from time.Time, to time.Time, vlrStatus vlrStatus) ([]string, error) {
 	var ids []string
 
 	loc, err := scraper_location.GetLocation()
@@ -79,7 +72,7 @@ func getUpcomingMatchIds(from time.Time, to time.Time) ([]string, error) {
 	}
 
 	for _, match := range matches {
-		if match.Status.Status != VLR_STATUS_UPCOMING {
+		if match.Status.Status != string(vlrStatus) {
 			continue
 		}
 
@@ -88,7 +81,58 @@ func getUpcomingMatchIds(from time.Time, to time.Time) ([]string, error) {
 			return nil, err
 		}
 
-		if matchTime.After(from) && matchTime.Before(to) {
+		if matchTime.UnixMilli() >= from.UnixMilli() && matchTime.UnixMilli() <= to.UnixMilli() {
+			ids = append(ids, match.MatchId)
+		}
+	}
+
+	return ids, nil
+}
+
+func getCompletedMatchIds(from time.Time, to time.Time) ([]string, error) {
+	var ids []string
+
+	loc, err := scraper_location.GetLocation()
+	if err != nil {
+		return nil, err
+	}
+
+	var matches []*scraper_matches.Match
+	page := 1
+	for {
+		newMatches, err := scraper_matches.ScrapeResults(page)
+		if err == customErrors.ErrNoMatches {
+			break
+		}
+		if err != nil {
+			return nil, err
+		}
+		matches = append(matches, newMatches...)
+
+		lastMatch := newMatches[len(newMatches)-1]
+		matchTime, err := lastMatch.GetUtcTime(loc)
+		if err != nil {
+			return nil, err
+		}
+
+		if matchTime.Before(to) {
+			break
+		}
+
+		page++
+	}
+
+	for _, match := range matches {
+		if match.Status.Status != string(VLR_STATUS_COMPLETED) {
+			continue
+		}
+
+		matchTime, err := match.GetUtcTime(loc)
+		if err != nil {
+			return nil, err
+		}
+
+		if matchTime.UnixMilli() >= from.UnixMilli() && matchTime.UnixMilli() <= to.UnixMilli() {
 			ids = append(ids, match.MatchId)
 		}
 	}
