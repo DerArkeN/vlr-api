@@ -75,8 +75,9 @@ func (Status) EnumDescriptor() ([]byte, []int) {
 
 // Returns a list of match ids that match the given criteria
 // Timestamps in UTC
-// If the status is STATUS_LIVE, the from and to fields are ignored
-// If the status is STATUS_UPCOMING or STATUS_COMPLETED, the from and to fields are required
+// If the status is STATUS_LIVE, the *from* and *to* fields are ignored
+// If the status is STATUS_UPCOMING and no *from* field is provided, the *from* field is set to the current time, if no *to* field is provided, the *to* field is set to the current time + 24 hours
+// If the status is STATUS_COMPLETED and no *from* field is provided, the *from* field is is set to the current time - 24 hours, if no *to* field is provided, the *to* field is set to the current time
 type GetMatchIdsRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

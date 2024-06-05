@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/derarken/vlr-api/proto"
-	"github.com/derarken/vlr-api/src/customErrors"
 	scraper_location "github.com/derarken/vlr-api/src/scraper/location"
 	scraper_matches "github.com/derarken/vlr-api/src/scraper/matches"
 )
@@ -18,9 +17,14 @@ const (
 	VLR_STATUS_COMPLETED vlrStatus = "Completed"
 )
 
+var (
+	ErrFromAfterTo = errors.New("from time must not be after to time")
+	ErrToInFuture  = errors.New("to time must not be in the future when status is completed")
+)
+
 func GetMatchIds(status proto.Status, from time.Time, to time.Time) ([]string, error) {
 	if from.After(to) {
-		return nil, errors.New("from time is after to time")
+		return nil, ErrFromAfterTo
 	}
 
 	switch status {
@@ -30,7 +34,7 @@ func GetMatchIds(status proto.Status, from time.Time, to time.Time) ([]string, e
 		return getUpcomingMatchIds(from, to, VLR_STATUS_UPCOMING)
 	case proto.Status_STATUS_COMPLETED:
 		if to.After(time.Now()) {
-			return nil, errors.New("to time is in the future")
+			return nil, ErrToInFuture
 		}
 		return getCompletedMatchIds(from, to)
 	}
@@ -50,7 +54,7 @@ func getUpcomingMatchIds(from time.Time, to time.Time, vlrStatus vlrStatus) ([]s
 	page := 1
 	for {
 		newMatches, err := scraper_matches.ScrapeMatches(page)
-		if err == customErrors.ErrNoMatches {
+		if err == scraper_matches.ErrNoMatches {
 			break
 		}
 		if err != nil {
@@ -101,7 +105,7 @@ func getCompletedMatchIds(from time.Time, to time.Time) ([]string, error) {
 	page := 1
 	for {
 		newMatches, err := scraper_matches.ScrapeResults(page)
-		if err == customErrors.ErrNoMatches {
+		if err == scraper_matches.ErrNoMatches {
 			break
 		}
 		if err != nil {

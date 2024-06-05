@@ -1,12 +1,14 @@
 package scraper_match
 
 import (
+	"errors"
 	"strings"
 
-	"github.com/derarken/vlr-api/src/customErrors"
 	"github.com/derarken/vlr-api/src/utils"
 	"github.com/gocolly/colly"
 )
+
+var ErrNoMatch = errors.New("no match found")
 
 type Match struct {
 	Super           *Super   `selector:".match-header > .match-header-super"`
@@ -81,7 +83,7 @@ func ScrapeMatchDetail(id string) (*Match, error) {
 	c.Visit("https://vlr.gg/" + id)
 
 	if matchDetail == nil {
-		return nil, customErrors.ErrNoMatch
+		return nil, ErrNoMatch
 	}
 
 	return matchDetail, nil

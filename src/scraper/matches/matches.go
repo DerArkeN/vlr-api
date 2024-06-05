@@ -1,14 +1,16 @@
 package scraper_matches
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"strings"
 	"time"
 
-	"github.com/derarken/vlr-api/src/customErrors"
 	"github.com/gocolly/colly"
 )
+
+var ErrNoMatches = errors.New("no matches found")
 
 type Match struct {
 	MatchId string
@@ -103,7 +105,7 @@ func scrapeMatches(url string) ([]*Match, error) {
 	}
 
 	if len(matches) == 0 {
-		return nil, customErrors.ErrNoMatches
+		return nil, ErrNoMatches
 	}
 
 	return matches, nil
