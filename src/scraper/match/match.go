@@ -27,7 +27,7 @@ type Match struct {
 
 type Super struct {
 	EventId string `selector:"div > .match-header-event" attr:"href"`
-	// datetime in America/Asuncion (idk why) format "2024-03-27 08:00:00"
+	// datetime string in America/Asuncion (idk why) format
 	DateTime string `selector:"div > .match-header-date > .moment-tz-convert" attr:"data-utc-ts"`
 	Patch    string `selector:"div > .match-header-date > [style='margin-top: 4px;']"`
 }
