@@ -57,8 +57,10 @@ func ScrapeMatchDetail(id string) (*Match, error) {
 		matchDetail.Versus.Score = utils.PrettifyString(matchDetail.Versus.Score)
 		matchDetail.Versus.Score = strings.ReplaceAll(matchDetail.Versus.Score, "vs.", "")
 
-		matchDetail.Versus.Team1Id = strings.TrimPrefix(matchDetail.Versus.Team1Id, "/team/")
-		matchDetail.Versus.Team2Id = strings.TrimPrefix(matchDetail.Versus.Team2Id, "/team/")
+		matchDetail.Super.EventId = strings.Split(matchDetail.Super.EventId, "/")[2]
+
+		matchDetail.Versus.Team1Id = strings.Split(matchDetail.Versus.Team1Id, "/")[2]
+		matchDetail.Versus.Team2Id = strings.Split(matchDetail.Versus.Team2Id, "/")[2]
 
 		for _, map_ := range matchDetail.Maps {
 			map_.Name = utils.PrettifyString(map_.Name)
