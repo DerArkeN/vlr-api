@@ -5,10 +5,6 @@ option go_package = "github.com/derarken/vlr-api/proto";
 
 import "google/protobuf/timestamp.proto";
 
-service Api {
-    rpc GetMatchIds(GetMatchIdsRequest) returns (GetMatchIdsResponse);
-}
-
 enum Status {
     STATUS_UNSPECIFIED = 0;
     STATUS_LIVE = 1;
@@ -16,17 +12,46 @@ enum Status {
     STATUS_COMPLETED = 3;
 }
 
-// Returns a list of match ids that match the given criteria
-// Timestamps in UTC
-// If the status is STATUS_LIVE, the *from* and *to* fields are ignored
-// If the status is STATUS_UPCOMING and no *from* field is provided, the *from* field is set to the current time, if no *to* field is provided, the *to* field is set to the *from* field +24h
-// If the status is STATUS_COMPLETED and no *from* field is provided, the *from* field is is set to the *to* field -24h, if no *to* field is provided, the *to* field is set to the current time
-message GetMatchIdsRequest {
-    Status status = 1;
-    google.protobuf.Timestamp from = 2;
-    google.protobuf.Timestamp to = 3;
+message Match {
+    message Head {
+        // vlr.gg/{match_id}
+        string match_id = 1;
+        // vlr.gg/event/{event_id}
+        string event_id = 2;
+        google.protobuf.Timestamp time = 3;
+    }
+    Head head = 1;
+
+    message Versus {
+        Team team1 = 1;
+        // the map score of the first team
+        int32 score1 = 2;
+
+        Team team2 = 3;
+        // the map score of the second team
+        int32 score2 = 4;
+    }
+    Versus versus = 2;
+
+    message Map {
+        // the chronological order of the map
+        int32 index = 1;
+        string name = 2;
+        message Round {
+            // the number of the round
+            int32 index = 1;
+            // the score of the first team
+            int32 score1 = 2;
+            // the score of the second team
+            int32 score2 = 3;
+        }
+        repeated Round rounds = 3;
+    }
+    repeated Map maps = 3;
 }
 
-message GetMatchIdsResponse {
-    repeated string match_ids = 1;
+message Team {
+    // vlr.gg/team/{team_id}
+    string team_id = 1;
+    string name = 2;
 }

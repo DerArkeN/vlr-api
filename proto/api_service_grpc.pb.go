@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.4.0
 // - protoc             v5.27.0--rc3
-// source: proto/api.proto
+// source: proto/api_service.proto
 
 package proto
 
@@ -20,6 +20,7 @@ const _ = grpc.SupportPackageIsVersion8
 
 const (
 	Api_GetMatchIds_FullMethodName = "/vlr.api.Api/GetMatchIds"
+	Api_GetMatch_FullMethodName    = "/vlr.api.Api/GetMatch"
 )
 
 // ApiClient is the client API for Api service.
@@ -27,6 +28,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ApiClient interface {
 	GetMatchIds(ctx context.Context, in *GetMatchIdsRequest, opts ...grpc.CallOption) (*GetMatchIdsResponse, error)
+	GetMatch(ctx context.Context, in *GetMatchRequest, opts ...grpc.CallOption) (*GetMatchResponse, error)
 }
 
 type apiClient struct {
@@ -47,11 +49,22 @@ func (c *apiClient) GetMatchIds(ctx context.Context, in *GetMatchIdsRequest, opt
 	return out, nil
 }
 
+func (c *apiClient) GetMatch(ctx context.Context, in *GetMatchRequest, opts ...grpc.CallOption) (*GetMatchResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetMatchResponse)
+	err := c.cc.Invoke(ctx, Api_GetMatch_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ApiServer is the server API for Api service.
 // All implementations must embed UnimplementedApiServer
 // for forward compatibility
 type ApiServer interface {
 	GetMatchIds(context.Context, *GetMatchIdsRequest) (*GetMatchIdsResponse, error)
+	GetMatch(context.Context, *GetMatchRequest) (*GetMatchResponse, error)
 	mustEmbedUnimplementedApiServer()
 }
 
@@ -61,6 +74,9 @@ type UnimplementedApiServer struct {
 
 func (UnimplementedApiServer) GetMatchIds(context.Context, *GetMatchIdsRequest) (*GetMatchIdsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetMatchIds not implemented")
+}
+func (UnimplementedApiServer) GetMatch(context.Context, *GetMatchRequest) (*GetMatchResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetMatch not implemented")
 }
 func (UnimplementedApiServer) mustEmbedUnimplementedApiServer() {}
 
@@ -93,6 +109,24 @@ func _Api_GetMatchIds_Handler(srv interface{}, ctx context.Context, dec func(int
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Api_GetMatch_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetMatchRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServer).GetMatch(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Api_GetMatch_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServer).GetMatch(ctx, req.(*GetMatchRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Api_ServiceDesc is the grpc.ServiceDesc for Api service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -104,7 +138,11 @@ var Api_ServiceDesc = grpc.ServiceDesc{
 			MethodName: "GetMatchIds",
 			Handler:    _Api_GetMatchIds_Handler,
 		},
+		{
+			MethodName: "GetMatch",
+			Handler:    _Api_GetMatch_Handler,
+		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "proto/api.proto",
+	Metadata: "proto/api_service.proto",
 }
