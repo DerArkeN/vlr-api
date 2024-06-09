@@ -18,7 +18,7 @@ message Match {
         string match_id = 1;
         // vlr.gg/event/{event_id}
         string event_id = 2;
-        google.protobuf.Timestamp time = 3;
+        google.protobuf.Timestamp date_time = 3;
     }
     Head head = 1;
 
@@ -34,12 +34,8 @@ message Match {
     Versus versus = 2;
 
     message Map {
-        // the chronological order of the map
-        int32 index = 1;
         string name = 2;
         message Round {
-            // the number of the round
-            int32 index = 1;
             // the score of the first team
             int32 score1 = 2;
             // the score of the second team

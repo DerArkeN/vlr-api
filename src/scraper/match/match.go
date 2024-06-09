@@ -2,13 +2,18 @@ package scraper_match
 
 import (
 	"errors"
+	"strconv"
 	"strings"
+	"time"
 
 	"github.com/derarken/vlr-api/src/utils"
 	"github.com/gocolly/colly"
 )
 
-var ErrNoMatch = errors.New("no match found")
+var (
+	ErrNoMatch      = errors.New("no match found")
+	ErrInvalidScore = errors.New("invalid score")
+)
 
 type Match struct {
 	Super           *Super   `selector:".match-header > .match-header-super"`
@@ -22,14 +27,16 @@ type Match struct {
 
 type Super struct {
 	EventId string `selector:"div > .match-header-event" attr:"href"`
-	// UTC Datetime string
+	// datetime in America/Asuncion (idk why) format "2024-03-27 08:00:00"
 	DateTime string `selector:"div > .match-header-date > .moment-tz-convert" attr:"data-utc-ts"`
 	Patch    string `selector:"div > .match-header-date > [style='margin-top: 4px;']"`
 }
 
 type Versus struct {
-	Team1Id string `selector:".match-header-link.mod-1" attr:"href"`
-	Team2Id string `selector:".match-header-link.mod-2" attr:"href"`
+	Team1Name string `selector:".match-header-link.mod-1 > .wf-title-med"`
+	Team1Id   string `selector:".match-header-link.mod-1" attr:"href"`
+	Team2Name string `selector:".match-header-link.mod-2 > .wf-title-med"`
+	Team2Id   string `selector:".match-header-link.mod-2" attr:"href"`
 	// the maps score in format "{Team1Score}:{Team2Score}"
 	Score string `selector:".match-header-vs-score > .match-header-vs-score"`
 	// live, final or the time until the match
@@ -37,7 +44,6 @@ type Versus struct {
 }
 
 type Map struct {
-	Index  string
 	Name   string   `selector:".vm-stats-game-header > .map > div > span"`
 	Rounds []string `selector:"div > div > .vlr-rounds > .vlr-rounds-row > .vlr-rounds-row-col" attr:"title"`
 }
@@ -50,6 +56,9 @@ func ScrapeMatchDetail(id string) (*Match, error) {
 		e.Unmarshal(matchDetail)
 		matchDetail.Versus.Score = utils.PrettifyString(matchDetail.Versus.Score)
 		matchDetail.Versus.Score = strings.ReplaceAll(matchDetail.Versus.Score, "vs.", "")
+
+		matchDetail.Versus.Team1Id = strings.TrimPrefix(matchDetail.Versus.Team1Id, "/team/")
+		matchDetail.Versus.Team2Id = strings.TrimPrefix(matchDetail.Versus.Team2Id, "/team/")
 
 		for _, map_ := range matchDetail.Maps {
 			map_.Name = utils.PrettifyString(map_.Name)
@@ -87,4 +96,33 @@ func ScrapeMatchDetail(id string) (*Match, error) {
 	}
 
 	return matchDetail, nil
+}
+
+func (m *Match) GetUtcTime() (time.Time, error) {
+	loc, err := time.LoadLocation("America/Asuncion")
+	if err != nil {
+		return time.Time{}, err
+	}
+	t, err := time.ParseInLocation(time.DateTime, m.Super.DateTime, loc)
+	if err != nil {
+		return time.Time{}, err
+	}
+	t = t.UTC()
+	return t, nil
+}
+
+func (m *Match) GetScore() (int, int, error) {
+	scores := strings.Split(m.Versus.Score, ":")
+	if len(scores) != 2 {
+		return 0, 0, ErrInvalidScore
+	}
+	score1, err := strconv.Atoi(scores[0])
+	if err != nil {
+		return 0, 0, err
+	}
+	score2, err := strconv.Atoi(scores[1])
+	if err != nil {
+		return 0, 0, err
+	}
+	return score1, score2, nil
 }
