@@ -62,8 +62,11 @@ func GetMatchIds(status proto.Status, from time.Time, to time.Time) ([]string, e
 		return getCompletedMatchIds(from, to)
 	default:
 		validStatuses := []string{}
-		for _, s := range proto.Status_name {
-			validStatuses = append(validStatuses, s)
+		for k, v := range proto.Status_name {
+			if k == 0 {
+				continue
+			}
+			validStatuses = append(validStatuses, v)
 		}
 		return nil, fmt.Errorf("invalid status, valid statuses are %v", validStatuses)
 	}
