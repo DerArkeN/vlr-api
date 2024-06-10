@@ -3,15 +3,24 @@ package service
 import (
 	"encoding/json"
 	"net/http"
+	"time"
 
+	"github.com/derarken/vlr-api/proto"
 	"github.com/derarken/vlr-api/src/api"
 )
 
 func StartRest() {
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("GET /match/{id}", func(w http.ResponseWriter, r *http.Request) {
-		match, err := api.GetMatch(r.PathValue("id"))
+	mux.HandleFunc("GET /match", func(w http.ResponseWriter, r *http.Request) {
+		const PARAM_ID = "id"
+		id := r.URL.Query().Get(PARAM_ID)
+		if id == "" {
+			http.Error(w, "missing id parameter", http.StatusBadRequest)
+			return
+		}
+
+		match, err := api.GetMatch(id)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -21,17 +30,37 @@ func StartRest() {
 		json.NewEncoder(w).Encode(match)
 	})
 
-	// mux.HandleFunc("GET /matchIds?{status}", func(w http.ResponseWriter, r *http.Request) {
-	// 	status := proto.Status_value[r.PathValue("status")]
-	// 	matchIds, err := api.GetMatchIds(proto.Status(status), time.Now(), time.Now().Add(time.Hour*24))
-	// 	if err != nil {
-	// 		http.Error(w, err.Error(), http.StatusInternalServerError)
-	// 		return
-	// 	}
-	// 	w.Header().Set("Content-Type", "application/json")
-	// 	w.Header().Set("Access-Control-Allow-Origin", "*")
-	// 	json.NewEncoder(w).Encode(matchIds)
-	// })
+	// froma and to are in RFC3339 format
+	mux.HandleFunc("GET /matchIds", func(w http.ResponseWriter, r *http.Request) {
+		const PARAM_STATUS = "status"
+		const PARAM_FROM = "from"
+		const PARAM_TO = "to"
+
+		statusParam := r.URL.Query().Get(PARAM_STATUS)
+		fromParam := r.URL.Query().Get(PARAM_FROM)
+		toParam := r.URL.Query().Get(PARAM_TO)
+
+		status := proto.Status(proto.Status_value[statusParam])
+		from, err := time.Parse(time.RFC3339, fromParam)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+		to, err := time.Parse(time.RFC3339, toParam)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		matchIds, err := api.GetMatchIds(status, from, to)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		json.NewEncoder(w).Encode(matchIds)
+	})
 
 	err := http.ListenAndServe(":8081", mux)
 	if err != nil {

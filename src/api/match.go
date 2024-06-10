@@ -20,8 +20,10 @@ func GetMatch(matchId string) (*proto.Match, error) {
 		return nil, err
 	}
 
-	score1, score2, err := smatch.GetScore()
-	if err != nil {
+	score1 := 0
+	score2 := 0
+	score1, score2, err = smatch.GetScore()
+	if err != nil && err != scraper_match.ErrInvalidScore {
 		return nil, err
 	}
 

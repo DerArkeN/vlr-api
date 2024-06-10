@@ -86,7 +86,7 @@ func scrapeMatches(url string) ([]*Match, error) {
 					match.Date = currDate
 
 					// head attribute can't be unmarshalled
-					match.MatchId = strings.Split(matchEntry.Attr("href"), "/")[2]
+					match.MatchId = strings.Split(matchEntry.Attr("href"), "/")[1]
 
 					// // event needs to be split since it contains the stage as well
 					// strings := strings.Split(match.Event, "\t")

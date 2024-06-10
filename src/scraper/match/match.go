@@ -33,9 +33,9 @@ type Super struct {
 }
 
 type Versus struct {
-	Team1Name string `selector:".match-header-link.mod-1 > .wf-title-med"`
+	Team1Name string `selector:".match-header-link.mod-1 > .match-header-link-name.mod-1 > .wf-title-med"`
 	Team1Id   string `selector:".match-header-link.mod-1" attr:"href"`
-	Team2Name string `selector:".match-header-link.mod-2 > .wf-title-med"`
+	Team2Name string `selector:".match-header-link.mod-2 > .match-header-link-name.mod-2 > .wf-title-med"`
 	Team2Id   string `selector:".match-header-link.mod-2" attr:"href"`
 	// the maps score in format "{Team1Score}:{Team2Score}"
 	Score string `selector:".match-header-vs-score > .match-header-vs-score"`
