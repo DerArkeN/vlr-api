@@ -41,12 +41,16 @@ func StartRest() {
 		toParam := r.URL.Query().Get(PARAM_TO)
 
 		status := proto.Status(proto.Status_value[statusParam])
-		from, err := time.Parse(time.RFC3339, fromParam)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-			return
+
+		var from time.Time
+		var to time.Time
+		var err error
+		if fromParam != "" {
+			from, err = time.Parse(time.RFC3339, fromParam)
 		}
-		to, err := time.Parse(time.RFC3339, toParam)
+		if toParam != "" {
+			to, err = time.Parse(time.RFC3339, toParam)
+		}
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
