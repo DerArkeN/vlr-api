@@ -10,7 +10,7 @@
 		"vscode": {
 			"extensions": [
 				"Postman.postman-for-vscode",
-				"zxh404.vscode-proto3"
+				"pbkit.vscode-pbkit"
 			]
 		}
 	},

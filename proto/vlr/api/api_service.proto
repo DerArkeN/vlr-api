@@ -3,11 +3,16 @@ syntax = "proto3";
 package vlr.api;
 option go_package = "github.com/derarken/vlr-api/proto";
 
+import "vlr/api/api.proto";
+import "google/api/annotations.proto";
 import "google/protobuf/timestamp.proto";
-import "proto/api.proto";
 
 service Api {
-    rpc GetMatchIds(GetMatchIdsRequest) returns (GetMatchIdsResponse);
+    rpc GetMatchIds(GetMatchIdsRequest) returns (GetMatchIdsResponse) {
+        option (google.api.http) = {
+            get: "/api/matchIds"
+        };
+    }
     rpc GetMatch(GetMatchRequest) returns (GetMatchResponse);
 }
 

@@ -4,7 +4,7 @@ import (
 	"context"
 	"net"
 
-	"github.com/derarken/vlr-api/proto"
+	proto "github.com/derarken/vlr-api/proto/vlr/api"
 	"github.com/derarken/vlr-api/src/api"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/grpclog"

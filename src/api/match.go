@@ -4,7 +4,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/derarken/vlr-api/proto"
+	proto "github.com/derarken/vlr-api/proto/vlr/api"
 	scraper_match "github.com/derarken/vlr-api/src/scraper/match"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
