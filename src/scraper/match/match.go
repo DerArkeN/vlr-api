@@ -57,6 +57,7 @@ func ScrapeMatchDetail(id string) (*Match, error) {
 
 	var matchDetail *Match
 	c.OnHTML(".col.mod-3", func(e *colly.HTMLElement) {
+		matchDetail = &Match{}
 		e.Unmarshal(matchDetail)
 		if matchDetail.Super == nil || matchDetail.Versus == nil {
 			matchDetail = nil
