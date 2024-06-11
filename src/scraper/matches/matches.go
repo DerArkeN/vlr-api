@@ -10,6 +10,14 @@ import (
 	"github.com/gocolly/colly"
 )
 
+type VlrStatus string
+
+const (
+	VLR_STATUS_LIVE      VlrStatus = "LIVE"
+	VLR_STATUS_UPCOMING  VlrStatus = "Upcoming"
+	VLR_STATUS_COMPLETED VlrStatus = "Completed"
+)
+
 var ErrNoMatches = errors.New("no matches found")
 
 type Match struct {
@@ -50,7 +58,7 @@ func ScrapeMatches(page int) ([]*Match, error) {
 }
 
 func ScrapeEventMatches(eventId string) ([]*Match, error) {
-	return scrapeMatches("https://www.vlr.gg/event/matches/" + eventId + "/?series_id=all")
+	return scrapeMatches("https://www.vlr.gg/event/matches/" + eventId + "/?series_id=all&group=all")
 }
 
 func scrapeMatches(url string) ([]*Match, error) {

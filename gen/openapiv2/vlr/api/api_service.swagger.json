@@ -82,6 +82,21 @@
     }
   },
   "definitions": {
+    "HeadEvent": {
+      "type": "object",
+      "properties": {
+        "eventId": {
+          "type": "string",
+          "title": "vlr.gg/event/{event_id}"
+        },
+        "name": {
+          "type": "string"
+        },
+        "stage": {
+          "type": "string"
+        }
+      }
+    },
     "MapRound": {
       "type": "object",
       "properties": {
@@ -100,13 +115,14 @@
     "MatchHead": {
       "type": "object",
       "properties": {
-        "matchId": {
-          "type": "string",
-          "title": "vlr.gg/{match_id}"
+        "status": {
+          "$ref": "#/definitions/vlrapiStatus"
         },
-        "eventId": {
-          "type": "string",
-          "title": "vlr.gg/event/{event_id}"
+        "matchId": {
+          "type": "string"
+        },
+        "event": {
+          "$ref": "#/definitions/HeadEvent"
         },
         "dateTime": {
           "type": "string",

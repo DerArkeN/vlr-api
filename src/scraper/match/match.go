@@ -26,7 +26,9 @@ type Match struct {
 }
 
 type Super struct {
-	EventId string `selector:"div > .match-header-event" attr:"href"`
+	EventId   string `selector:"div > .match-header-event" attr:"href"`
+	EventName string `selector:"div > .match-header-event > div > [style='font-weight: 700;']"`
+	Stage     string `selector:"div > .match-header-event > div > .match-header-event-series"`
 	// datetime string in America/Asuncion (idk why) format
 	DateTime string `selector:"div > .match-header-date > .moment-tz-convert" attr:"data-utc-ts"`
 	Patch    string `selector:"div > .match-header-date > [style='margin-top: 4px;']"`
@@ -63,10 +65,13 @@ func ScrapeMatchDetail(id string) (*Match, error) {
 			matchDetail = nil
 			return
 		}
-		matchDetail.Versus.Score = utils.PrettifyString(matchDetail.Versus.Score)
-		matchDetail.Versus.Score = strings.ReplaceAll(matchDetail.Versus.Score, "vs.", "")
 
 		matchDetail.Super.EventId = strings.Split(matchDetail.Super.EventId, "/")[2]
+		matchDetail.Super.EventName = utils.PrettifyString(matchDetail.Super.EventName)
+		matchDetail.Super.Stage = utils.PrettifyString(matchDetail.Super.Stage)
+
+		matchDetail.Versus.Score = utils.PrettifyString(matchDetail.Versus.Score)
+		matchDetail.Versus.Score = strings.ReplaceAll(matchDetail.Versus.Score, "vs.", "")
 
 		matchDetail.Versus.Team1Id = strings.Split(matchDetail.Versus.Team1Id, "/")[2]
 		matchDetail.Versus.Team2Id = strings.Split(matchDetail.Versus.Team2Id, "/")[2]

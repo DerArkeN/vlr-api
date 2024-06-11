@@ -14,11 +14,16 @@ enum Status {
 
 message Match {
     message Head {
-        // vlr.gg/{match_id}
-        string match_id = 1;
-        // vlr.gg/event/{event_id}
-        string event_id = 2;
-        google.protobuf.Timestamp date_time = 3;
+        Status status = 1;
+        message Event {
+            // vlr.gg/event/{event_id}
+            string event_id = 1;
+            string name = 2;
+            string stage = 3;
+        }
+        string match_id = 2;
+        Event event = 3;
+        google.protobuf.Timestamp date_time = 4;
     }
     Head head = 1;
 

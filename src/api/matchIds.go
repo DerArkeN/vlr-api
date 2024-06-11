@@ -10,14 +10,6 @@ import (
 	scraper_matches "github.com/derarken/vlr-api/src/scraper/matches"
 )
 
-type vlrStatus string
-
-const (
-	VLR_STATUS_LIVE      vlrStatus = "LIVE"
-	VLR_STATUS_UPCOMING  vlrStatus = "Upcoming"
-	VLR_STATUS_COMPLETED vlrStatus = "Completed"
-)
-
 var (
 	ErrFromAfterTo = errors.New("from time must not be after to time")
 	ErrToInFuture  = errors.New("to time must not be in the future when status is completed")
@@ -88,7 +80,7 @@ func getLiveMatches() ([]string, error) {
 		matches = append(matches, newMatches...)
 
 		lastMatch := newMatches[len(newMatches)-1]
-		if lastMatch.Status.Status != string(VLR_STATUS_LIVE) {
+		if lastMatch.Status.Status != string(scraper_matches.VLR_STATUS_LIVE) {
 			break
 		}
 
@@ -96,7 +88,7 @@ func getLiveMatches() ([]string, error) {
 	}
 
 	for _, match := range matches {
-		if match.Status.Status != string(VLR_STATUS_LIVE) {
+		if match.Status.Status != string(scraper_matches.VLR_STATUS_LIVE) {
 			continue
 		}
 
@@ -140,7 +132,7 @@ func getUpcomingMatchIds(from time.Time, to time.Time) ([]string, error) {
 	}
 
 	for _, match := range matches {
-		if match.Status.Status != string(VLR_STATUS_UPCOMING) {
+		if match.Status.Status != string(scraper_matches.VLR_STATUS_UPCOMING) {
 			continue
 		}
 
@@ -191,7 +183,7 @@ func getCompletedMatchIds(from time.Time, to time.Time) ([]string, error) {
 	}
 
 	for _, match := range matches {
-		if match.Status.Status != string(VLR_STATUS_COMPLETED) {
+		if match.Status.Status != string(scraper_matches.VLR_STATUS_COMPLETED) {
 			continue
 		}
 
