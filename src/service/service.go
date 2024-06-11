@@ -32,13 +32,14 @@ func Start() {
 	s := grpc.NewServer()
 	proto.RegisterApiServer(s, &Server{})
 
+	reflection.Register(s)
+
 	grpclog.Infof("gRPC service %s running on %s", proto.Api_ServiceDesc.ServiceName, grpcPort)
 	go func() {
 		err = s.Serve(listener)
 		if err != nil {
 			panic(err)
 		}
-		reflection.Register(s)
 	}()
 
 	conn, err := grpc.NewClient(grpcPort, grpc.WithTransportCredentials(insecure.NewCredentials()))
