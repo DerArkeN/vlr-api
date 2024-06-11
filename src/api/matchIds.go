@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	proto "github.com/derarken/vlr-api/proto/vlr/api"
+	proto "github.com/derarken/vlr-api/gen/vlr/api"
 	scraper_location "github.com/derarken/vlr-api/src/scraper/location"
 	scraper_matches "github.com/derarken/vlr-api/src/scraper/matches"
 )

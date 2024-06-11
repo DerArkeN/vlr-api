@@ -49,11 +49,19 @@ type Map struct {
 }
 
 func ScrapeMatchDetail(id string) (*Match, error) {
+	if id == "" {
+		return nil, ErrNoMatch
+	}
+
 	c := colly.NewCollector()
 
-	matchDetail := &Match{}
+	var matchDetail *Match
 	c.OnHTML(".col.mod-3", func(e *colly.HTMLElement) {
 		e.Unmarshal(matchDetail)
+		if matchDetail.Super == nil || matchDetail.Versus == nil {
+			matchDetail = nil
+			return
+		}
 		matchDetail.Versus.Score = utils.PrettifyString(matchDetail.Versus.Score)
 		matchDetail.Versus.Score = strings.ReplaceAll(matchDetail.Versus.Score, "vs.", "")
 

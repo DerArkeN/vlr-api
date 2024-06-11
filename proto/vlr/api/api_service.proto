@@ -10,10 +10,16 @@ import "google/protobuf/timestamp.proto";
 service Api {
     rpc GetMatchIds(GetMatchIdsRequest) returns (GetMatchIdsResponse) {
         option (google.api.http) = {
-            get: "/api/matchIds"
+            post: "/v1/matchIds",
+            body: "*"
         };
     }
-    rpc GetMatch(GetMatchRequest) returns (GetMatchResponse);
+    rpc GetMatch(GetMatchRequest) returns (GetMatchResponse) {
+        option (google.api.http) = {
+            post: "/v1/match",
+            body: "*"
+        };
+    }
 }
 
 // Returns a list of match ids that match the given criteria
