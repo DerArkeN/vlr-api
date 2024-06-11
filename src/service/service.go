@@ -6,7 +6,6 @@ import (
 	"net/http"
 
 	proto "github.com/derarken/vlr-api/gen/vlr/api"
-	"github.com/derarken/vlr-api/src/api"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -23,6 +22,10 @@ type Server struct {
 	proto.UnimplementedApiServer
 }
 
+func NewServer() *Server {
+	return &Server{}
+}
+
 func Start() {
 	listener, err := net.Listen("tcp", grpcPort)
 	if err != nil {
@@ -30,7 +33,9 @@ func Start() {
 	}
 
 	s := grpc.NewServer()
-	proto.RegisterApiServer(s, &Server{})
+
+	apiServer := NewServer()
+	proto.RegisterApiServer(s, apiServer)
 
 	reflection.Register(s)
 
@@ -42,6 +47,10 @@ func Start() {
 		}
 	}()
 
+	startGateway()
+}
+
+func startGateway() {
 	conn, err := grpc.NewClient(grpcPort, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		panic(err)
@@ -58,20 +67,4 @@ func Start() {
 	if err != nil {
 		panic(err)
 	}
-}
-
-func (s *Server) GetMatchIds(ctx context.Context, in *proto.GetMatchIdsRequest) (*proto.GetMatchIdsResponse, error) {
-	ids, err := api.GetMatchIds(in.Status, in.From.AsTime(), in.To.AsTime())
-	if err != nil {
-		return nil, err
-	}
-	return &proto.GetMatchIdsResponse{MatchIds: ids}, nil
-}
-
-func (s *Server) GetMatch(ctx context.Context, in *proto.GetMatchRequest) (*proto.GetMatchResponse, error) {
-	match, err := api.GetMatch(in.MatchId)
-	if err != nil {
-		return nil, err
-	}
-	return &proto.GetMatchResponse{Match: match}, nil
 }
