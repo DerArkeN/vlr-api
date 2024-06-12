@@ -68,6 +68,7 @@
         "parameters": [
           {
             "name": "body",
+            "description": "Timestamps are in UTC\nIf the status is STATUS_LIVE, the *from* and *to* fields are ignored\nIf the status is STATUS_UPCOMING and no *from* field is provided, the *from* field is set to the current time, if no *to* field is provided, the *to* field is set to the *from* field +24h\nIf the status is STATUS_COMPLETED and no *from* field is provided, the *from* field is is set to the *to* field -24h, if no *to* field is provided, the *to* field is set to the current time",
             "in": "body",
             "required": true,
             "schema": {
@@ -82,6 +83,15 @@
     }
   },
   "definitions": {
+    "GetMatchIdsRequestOptions": {
+      "type": "object",
+      "properties": {
+        "eventId": {
+          "type": "string",
+          "title": "If an event id is provided, *from* and *to* are ignored"
+        }
+      }
+    },
     "HeadEvent": {
       "type": "object",
       "properties": {
@@ -179,9 +189,13 @@
         "to": {
           "type": "string",
           "format": "date-time"
+        },
+        "options": {
+          "$ref": "#/definitions/GetMatchIdsRequestOptions"
         }
       },
-      "title": "Returns a list of match ids that match the given criteria\nTimestamps in UTC\nIf the status is STATUS_LIVE, the *from* and *to* fields are ignored\nIf the status is STATUS_UPCOMING and no *from* field is provided, the *from* field is set to the current time, if no *to* field is provided, the *to* field is set to the *from* field +24h\nIf the status is STATUS_COMPLETED and no *from* field is provided, the *from* field is is set to the *to* field -24h, if no *to* field is provided, the *to* field is set to the current time"
+      "description": "Timestamps are in UTC\nIf the status is STATUS_LIVE, the *from* and *to* fields are ignored\nIf the status is STATUS_UPCOMING and no *from* field is provided, the *from* field is set to the current time, if no *to* field is provided, the *to* field is set to the *from* field +24h\nIf the status is STATUS_COMPLETED and no *from* field is provided, the *from* field is is set to the *to* field -24h, if no *to* field is provided, the *to* field is set to the current time",
+      "title": "* \nReturns a list of match ids that match the given criteria\nYou can further limit the number by filling one or more optional *options* fields, look at the comments for the *options* message for more information"
     },
     "apiGetMatchIdsResponse": {
       "type": "object",

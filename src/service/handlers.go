@@ -8,7 +8,7 @@ import (
 )
 
 func (s *Server) GetMatchIds(ctx context.Context, in *proto.GetMatchIdsRequest) (*proto.GetMatchIdsResponse, error) {
-	ids, err := api.GetMatchIds(in.Status, in.From.AsTime(), in.To.AsTime())
+	ids, err := api.GetMatchIds(in)
 	if err != nil {
 		return nil, err
 	}

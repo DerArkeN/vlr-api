@@ -8,6 +8,7 @@ import (
 	proto "github.com/derarken/vlr-api/gen/vlr/api"
 	scraper_location "github.com/derarken/vlr-api/src/scraper/location"
 	scraper_matches "github.com/derarken/vlr-api/src/scraper/matches"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 var (
@@ -15,43 +16,25 @@ var (
 	ErrToInFuture  = errors.New("to time must not be in the future when status is completed")
 )
 
-func GetMatchIds(status proto.Status, from time.Time, to time.Time) ([]string, error) {
-	switch status {
+func GetMatchIds(request *proto.GetMatchIdsRequest) ([]string, error) {
+	switch request.Status {
 	case proto.Status_STATUS_LIVE:
-		return getLiveMatches()
+		return getLiveMatches(request.Options)
+
 	case proto.Status_STATUS_UPCOMING:
-		if from.IsZero() && to.IsZero() {
-			from = time.Now()
-			to = from.Add(time.Hour * 24)
+		from, to, err := validateUpcomingTimes(request.From, request.To)
+		if err != nil {
+			return nil, err
 		}
-		if from.IsZero() && !to.IsZero() {
-			from = time.Now()
-		}
-		if !from.IsZero() && to.IsZero() {
-			to = from.Add(time.Hour * 24)
-		}
-		if from.After(to) {
-			return nil, ErrFromAfterTo
-		}
-		return getUpcomingMatchIds(from, to)
+		return getUpcomingMatchIds(from, to, request.Options)
+
 	case proto.Status_STATUS_COMPLETED:
-		if from.IsZero() && to.IsZero() {
-			to = time.Now()
-			from = to.Add(time.Hour * -24)
+		from, to, err := validateCompletedTimes(request.From, request.To)
+		if err != nil {
+			return nil, err
 		}
-		if from.IsZero() && !to.IsZero() {
-			from = to.Add(time.Hour * -24)
-		}
-		if !from.IsZero() && to.IsZero() {
-			to = time.Now()
-		}
-		if from.After(to) {
-			return nil, ErrFromAfterTo
-		}
-		if to.After(time.Now()) {
-			return nil, ErrToInFuture
-		}
-		return getCompletedMatchIds(from, to)
+		return getCompletedMatchIds(from, to, request.Options)
+
 	default:
 		validStatuses := []string{}
 		for k, v := range proto.Status_name {
@@ -61,16 +44,26 @@ func GetMatchIds(status proto.Status, from time.Time, to time.Time) ([]string, e
 			validStatuses = append(validStatuses, v)
 		}
 		return nil, fmt.Errorf("invalid status, valid statuses are %v", validStatuses)
+
 	}
 }
 
-func getLiveMatches() ([]string, error) {
-	var ids []string
-
+func getLiveMatches(opt *proto.GetMatchIdsRequest_Options) ([]string, error) {
 	var matches []*scraper_matches.Match
 	page := 1
 	for {
-		newMatches, err := scraper_matches.ScrapeMatches(page)
+		var newMatches []*scraper_matches.Match
+		var err error
+		if opt != nil && opt.EventId != "" {
+			newMatches, err = scraper_matches.ScrapeEventMatches(opt.EventId)
+			if err != nil {
+				return nil, err
+			}
+			matches = append(matches, newMatches...)
+			break
+		} else {
+			newMatches, err = scraper_matches.ScrapeMatches(page)
+		}
 		if err == scraper_matches.ErrNoMatches {
 			break
 		}
@@ -87,20 +80,36 @@ func getLiveMatches() ([]string, error) {
 		page++
 	}
 
-	for _, match := range matches {
-		if match.Status.Status != string(scraper_matches.VLR_STATUS_LIVE) {
-			continue
-		}
-
-		ids = append(ids, match.MatchId)
-	}
-
-	return ids, nil
+	return getIdsByStatusAndTime(matches, scraper_matches.VLR_STATUS_LIVE, nil, time.Time{}, time.Time{})
 }
 
-func getUpcomingMatchIds(from time.Time, to time.Time) ([]string, error) {
-	var ids []string
+func validateUpcomingTimes(frompb *timestamppb.Timestamp, topb *timestamppb.Timestamp) (time.Time, time.Time, error) {
+	from := time.Time{}
+	if frompb != nil {
+		from = frompb.AsTime()
+	}
+	to := time.Time{}
+	if topb != nil {
+		to = topb.AsTime()
+	}
 
+	if from.IsZero() && to.IsZero() {
+		from = time.Now()
+		to = from.Add(time.Hour * 24)
+	}
+	if from.IsZero() && !to.IsZero() {
+		from = time.Now()
+	}
+	if !from.IsZero() && to.IsZero() {
+		to = from.Add(time.Hour * 24)
+	}
+	if from.After(to) {
+		return time.Time{}, time.Time{}, ErrFromAfterTo
+	}
+	return from, to, nil
+}
+
+func getUpcomingMatchIds(from time.Time, to time.Time, opt *proto.GetMatchIdsRequest_Options) ([]string, error) {
 	loc, err := scraper_location.GetLocation()
 	if err != nil {
 		return nil, err
@@ -109,7 +118,20 @@ func getUpcomingMatchIds(from time.Time, to time.Time) ([]string, error) {
 	var matches []*scraper_matches.Match
 	page := 1
 	for {
-		newMatches, err := scraper_matches.ScrapeMatches(page)
+		var newMatches []*scraper_matches.Match
+		var err error
+		if opt != nil && opt.EventId != "" {
+			newMatches, err = scraper_matches.ScrapeEventMatches(opt.EventId)
+			if err != nil {
+				return nil, err
+			}
+			matches = append(matches, newMatches...)
+			from = time.Time{}
+			to = time.Time{}
+			break
+		} else {
+			newMatches, err = scraper_matches.ScrapeMatches(page)
+		}
 		if err == scraper_matches.ErrNoMatches {
 			break
 		}
@@ -131,27 +153,39 @@ func getUpcomingMatchIds(from time.Time, to time.Time) ([]string, error) {
 		page++
 	}
 
-	for _, match := range matches {
-		if match.Status.Status != string(scraper_matches.VLR_STATUS_UPCOMING) {
-			continue
-		}
-
-		matchTime, err := match.GetUtcTime(loc)
-		if err != nil {
-			return nil, err
-		}
-
-		if matchTime.UnixMilli() >= from.UnixMilli() && matchTime.UnixMilli() <= to.UnixMilli() {
-			ids = append(ids, match.MatchId)
-		}
-	}
-
-	return ids, nil
+	return getIdsByStatusAndTime(matches, scraper_matches.VLR_STATUS_UPCOMING, loc, from, to)
 }
 
-func getCompletedMatchIds(from time.Time, to time.Time) ([]string, error) {
-	var ids []string
+func validateCompletedTimes(frompb *timestamppb.Timestamp, topb *timestamppb.Timestamp) (time.Time, time.Time, error) {
+	from := time.Time{}
+	if frompb != nil {
+		from = frompb.AsTime()
+	}
+	to := time.Time{}
+	if topb != nil {
+		to = topb.AsTime()
+	}
 
+	if from.IsZero() && to.IsZero() {
+		to = time.Now()
+		from = to.Add(time.Hour * -24)
+	}
+	if from.IsZero() && !to.IsZero() {
+		from = to.Add(time.Hour * -24)
+	}
+	if !from.IsZero() && to.IsZero() {
+		to = time.Now()
+	}
+	if from.After(to) {
+		return time.Time{}, time.Time{}, ErrFromAfterTo
+	}
+	if to.After(time.Now()) {
+		return time.Time{}, time.Time{}, ErrToInFuture
+	}
+	return from, to, nil
+}
+
+func getCompletedMatchIds(from time.Time, to time.Time, opt *proto.GetMatchIdsRequest_Options) ([]string, error) {
 	loc, err := scraper_location.GetLocation()
 	if err != nil {
 		return nil, err
@@ -160,7 +194,20 @@ func getCompletedMatchIds(from time.Time, to time.Time) ([]string, error) {
 	var matches []*scraper_matches.Match
 	page := 1
 	for {
-		newMatches, err := scraper_matches.ScrapeResults(page)
+		var newMatches []*scraper_matches.Match
+		var err error
+		if opt != nil && opt.EventId != "" {
+			newMatches, err = scraper_matches.ScrapeEventMatches(opt.EventId)
+			if err != nil {
+				return nil, err
+			}
+			matches = append(matches, newMatches...)
+			from = time.Time{}
+			to = time.Time{}
+			break
+		} else {
+			newMatches, err = scraper_matches.ScrapeResults(page)
+		}
 		if err == scraper_matches.ErrNoMatches {
 			break
 		}
@@ -182,20 +229,35 @@ func getCompletedMatchIds(from time.Time, to time.Time) ([]string, error) {
 		page++
 	}
 
+	return getIdsByStatusAndTime(matches, scraper_matches.VLR_STATUS_COMPLETED, loc, from, to)
+}
+
+func getIdsByStatusAndTime(matches []*scraper_matches.Match, status scraper_matches.VlrStatus, loc *time.Location, from time.Time, to time.Time) ([]string, error) {
+	var ids []string
+
 	for _, match := range matches {
-		if match.Status.Status != string(scraper_matches.VLR_STATUS_COMPLETED) {
+		if match.Status.Status != string(status) {
 			continue
 		}
 
-		matchTime, err := match.GetUtcTime(loc)
-		if err != nil {
-			return nil, err
-		}
+		if shouldValidateTime(loc, from, to) {
+			matchTime, err := match.GetUtcTime(loc)
+			if err != nil {
+				return nil, err
+			}
 
-		if matchTime.UnixMilli() >= from.UnixMilli() && matchTime.UnixMilli() <= to.UnixMilli() {
+			if matchTime.UnixMilli() >= from.UnixMilli() && matchTime.UnixMilli() <= to.UnixMilli() {
+				ids = append(ids, match.MatchId)
+			}
+		} else {
 			ids = append(ids, match.MatchId)
 		}
+
 	}
 
 	return ids, nil
+}
+
+func shouldValidateTime(loc *time.Location, from time.Time, to time.Time) bool {
+	return loc != nil && !from.IsZero() && !to.IsZero()
 }

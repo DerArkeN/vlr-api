@@ -115,10 +115,18 @@ func ScrapeMatchDetail(id string) (*Match, error) {
 }
 
 func (m *Match) GetUtcTime() (time.Time, error) {
-	loc, err := time.LoadLocation("America/Asuncion")
+	loc, err := time.LoadLocation("Asia/Choibalsan")
 	if err != nil {
 		return time.Time{}, err
 	}
+
+	if strings.Contains(m.Super.DateTime, "PM") {
+		loc, err = time.LoadLocation("America/Asuncion")
+		if err != nil {
+			return time.Time{}, err
+		}
+	}
+
 	t, err := time.ParseInLocation(time.DateTime, m.Super.DateTime, loc)
 	if err != nil {
 		return time.Time{}, err
