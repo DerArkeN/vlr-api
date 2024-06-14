@@ -29,7 +29,7 @@ type Super struct {
 	EventId   string `selector:"div > .match-header-event" attr:"href"`
 	EventName string `selector:"div > .match-header-event > div > [style='font-weight: 700;']"`
 	Stage     string `selector:"div > .match-header-event > div > .match-header-event-series"`
-	// datetime string in America/Asuncion (idk why) format
+	// this is not UTC but America/Havana
 	DateTime string `selector:"div > .match-header-date > .moment-tz-convert" attr:"data-utc-ts"`
 	Patch    string `selector:"div > .match-header-date > [style='margin-top: 4px;']"`
 }
@@ -115,16 +115,9 @@ func ScrapeMatchDetail(id string) (*Match, error) {
 }
 
 func (m *Match) GetUtcTime() (time.Time, error) {
-	loc, err := time.LoadLocation("Asia/Choibalsan")
+	loc, err := time.LoadLocation("America/Havana")
 	if err != nil {
 		return time.Time{}, err
-	}
-
-	if strings.Contains(m.Super.DateTime, "PM") {
-		loc, err = time.LoadLocation("America/Asuncion")
-		if err != nil {
-			return time.Time{}, err
-		}
 	}
 
 	t, err := time.ParseInLocation(time.DateTime, m.Super.DateTime, loc)
