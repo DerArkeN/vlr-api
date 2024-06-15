@@ -25,8 +25,11 @@ const (
 // *
 // Returns a list of match ids that match the given criteria
 //
-// You can further limit the number by filling one or more optional *options* fields, look at the comments for the *options* message for more information
-// Timestamps are in UTC
+// You can further limit the results by filling one or more optional *options* fields.
+// - If an event id is provided, *from* and *to* are ignored´
+//
+// # Timestamps are in UTC
+//
 // If the status is STATUS_LIVE, the *from* and *to* fields are ignored
 // If the status is STATUS_UPCOMING and no *from* field is provided, the *from* field is set to the current time, if no *to* field is provided, the *to* field is set to the *from* field +24h
 // If the status is STATUS_COMPLETED and no *from* field is provided, the *from* field is is set to the *to* field -24h, if no *to* field is provided, the *to* field is set to the current time
@@ -248,7 +251,6 @@ type GetMatchIdsRequest_Options struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// If an event id is provided, *from* and *to* are ignored
 	EventId string `protobuf:"bytes,1,opt,name=event_id,json=eventId,proto3" json:"event_id,omitempty"`
 }
 
