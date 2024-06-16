@@ -2,7 +2,7 @@
 
 ## Description
 
-A VALORANT E-Sports API using data from (vlr.gg)[https://vlr.gg].
+A VALORANT E-Sports API using data from [vlr.gg](https://vlr.gg).
 
 ## Installation
 
