@@ -3,6 +3,7 @@ module github.com/derarken/vlr-api
 go 1.22.1
 
 require (
+	github.com/flowchartsman/swaggerui v0.0.0-20221017034628-909ed4f3701b
 	github.com/gocolly/colly v1.2.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.20.0
 	google.golang.org/genproto/googleapis/api v0.0.0-20240513163218-0867130af1f8
