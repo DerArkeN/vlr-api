@@ -21,7 +21,7 @@ func main() {
 	defer cancel()
 
 	resp, err := c.GetMatchIds(ctx, &proto.GetMatchIdsRequest{
-		Status: proto.Status_STATUS_COMPLETED,
+		State: proto.MatchState_MATCH_STATE_COMPLETED,
 		Options: &proto.GetMatchIdsRequest_Options{
 			EventId: "1999", // Champions Tour 2024: Masters Shanghai
 		},

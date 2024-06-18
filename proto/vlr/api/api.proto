@@ -5,16 +5,16 @@ option go_package = "github.com/derarken/vlr-api/proto";
 
 import "google/protobuf/timestamp.proto";
 
-enum Status {
-    STATUS_UNSPECIFIED = 0;
-    STATUS_LIVE = 1;
-    STATUS_UPCOMING = 2;
-    STATUS_COMPLETED = 3;
+enum MatchState {
+    MATCH_STATE_UNSPECIFIED = 0;
+    MATCH_STATE_LIVE = 1;
+    MATCH_STATE_UPCOMING = 2;
+    MATCH_STATE_COMPLETED = 3;
 }
 
 message Match {
     message Head {
-        Status status = 1;
+        MatchState state = 1;
         message Event {
             // vlr.gg/event/{event_id}
             string event_id = 1;

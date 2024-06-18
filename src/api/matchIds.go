@@ -13,22 +13,22 @@ import (
 
 var (
 	ErrFromAfterTo = errors.New("from time must not be after to time")
-	ErrToInFuture  = errors.New("to time must not be in the future when status is completed")
+	ErrToInFuture  = errors.New("to time must not be in the future when state is completed")
 )
 
 func GetMatchIds(request *proto.GetMatchIdsRequest) ([]string, error) {
-	switch request.Status {
-	case proto.Status_STATUS_LIVE:
+	switch request.State {
+	case proto.MatchState_MATCH_STATE_LIVE:
 		return getLiveMatches(request.Options)
 
-	case proto.Status_STATUS_UPCOMING:
+	case proto.MatchState_MATCH_STATE_UPCOMING:
 		from, to, err := validateUpcomingTimes(request.From, request.To)
 		if err != nil {
 			return nil, err
 		}
 		return getUpcomingMatchIds(from, to, request.Options)
 
-	case proto.Status_STATUS_COMPLETED:
+	case proto.MatchState_MATCH_STATE_COMPLETED:
 		from, to, err := validateCompletedTimes(request.From, request.To)
 		if err != nil {
 			return nil, err
@@ -36,14 +36,14 @@ func GetMatchIds(request *proto.GetMatchIdsRequest) ([]string, error) {
 		return getCompletedMatchIds(from, to, request.Options)
 
 	default:
-		validStatuses := []string{}
-		for k, v := range proto.Status_name {
+		validStates := []string{}
+		for k, v := range proto.MatchState_name {
 			if k == 0 {
 				continue
 			}
-			validStatuses = append(validStatuses, v)
+			validStates = append(validStates, v)
 		}
-		return nil, fmt.Errorf("invalid status, valid statuses are %v", validStatuses)
+		return nil, fmt.Errorf("invalid state, valid states are %v", validStates)
 
 	}
 }
@@ -73,14 +73,14 @@ func getLiveMatches(opt *proto.GetMatchIdsRequest_Options) ([]string, error) {
 		matches = append(matches, newMatches...)
 
 		lastMatch := newMatches[len(newMatches)-1]
-		if lastMatch.Status.Status != string(scraper_matches.VLR_STATUS_LIVE) {
+		if lastMatch.State.State != string(scraper_matches.VLR_STATE_LIVE) {
 			break
 		}
 
 		page++
 	}
 
-	return getIdsByStatusAndTime(matches, scraper_matches.VLR_STATUS_LIVE, nil, time.Time{}, time.Time{})
+	return getIdsByStateAndTime(matches, scraper_matches.VLR_STATE_LIVE, nil, time.Time{}, time.Time{})
 }
 
 func validateUpcomingTimes(frompb *timestamppb.Timestamp, topb *timestamppb.Timestamp) (time.Time, time.Time, error) {
@@ -153,7 +153,7 @@ func getUpcomingMatchIds(from time.Time, to time.Time, opt *proto.GetMatchIdsReq
 		page++
 	}
 
-	return getIdsByStatusAndTime(matches, scraper_matches.VLR_STATUS_UPCOMING, loc, from, to)
+	return getIdsByStateAndTime(matches, scraper_matches.VLR_STATE_UPCOMING, loc, from, to)
 }
 
 func validateCompletedTimes(frompb *timestamppb.Timestamp, topb *timestamppb.Timestamp) (time.Time, time.Time, error) {
@@ -229,14 +229,14 @@ func getCompletedMatchIds(from time.Time, to time.Time, opt *proto.GetMatchIdsRe
 		page++
 	}
 
-	return getIdsByStatusAndTime(matches, scraper_matches.VLR_STATUS_COMPLETED, loc, from, to)
+	return getIdsByStateAndTime(matches, scraper_matches.VLR_STATE_COMPLETED, loc, from, to)
 }
 
-func getIdsByStatusAndTime(matches []*scraper_matches.Match, status scraper_matches.VlrStatus, loc *time.Location, from time.Time, to time.Time) ([]string, error) {
+func getIdsByStateAndTime(matches []*scraper_matches.Match, state scraper_matches.VlrState, loc *time.Location, from time.Time, to time.Time) ([]string, error) {
 	var ids []string
 
 	for _, match := range matches {
-		if match.Status.Status != string(status) {
+		if match.State.State != string(state) {
 			continue
 		}
 

@@ -10,21 +10,21 @@ import (
 	"github.com/gocolly/colly"
 )
 
-type VlrStatus string
+type VlrState string
 
 const (
-	VLR_STATUS_LIVE      VlrStatus = "LIVE"
-	VLR_STATUS_UPCOMING  VlrStatus = "Upcoming"
-	VLR_STATUS_COMPLETED VlrStatus = "Completed"
+	VLR_STATE_LIVE      VlrState = "LIVE"
+	VLR_STATE_UPCOMING  VlrState = "Upcoming"
+	VLR_STATE_COMPLETED VlrState = "Completed"
 )
 
 var ErrNoMatches = errors.New("no matches found")
 
 type Match struct {
 	MatchId string
-	Status  *Status `selector:".match-item-eta"`
-	Date    string  `selector:".match-item-date"`
-	Time    string  `selector:".match-item-time"`
+	State   *State `selector:".match-item-eta"`
+	Date    string `selector:".match-item-date"`
+	Time    string `selector:".match-item-time"`
 	// Teams  []*Team `selector:".match-item-vs > .match-item-vs-team"`
 	// Note   string  `selector:".match-item-note"`
 	// Vods   []*Vod  `selector:".match-item-vod"`
@@ -37,9 +37,9 @@ type Match struct {
 // 	Score string `selector:".match-item-vs-team-score"`
 // }
 
-type Status struct {
-	Status string `selector:".ml > .ml-status"`
-	ETA    string `selector:".ml > .ml-eta"`
+type State struct {
+	State string `selector:".ml > .ml-status"`
+	ETA   string `selector:".ml > .ml-eta"`
 }
 
 // type Vod struct {

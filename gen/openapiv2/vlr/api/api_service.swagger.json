@@ -29,7 +29,7 @@
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/googlerpcStatus"
+              "$ref": "#/definitions/rpcStatus"
             }
           }
         },
@@ -61,14 +61,14 @@
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/googlerpcStatus"
+              "$ref": "#/definitions/rpcStatus"
             }
           }
         },
         "parameters": [
           {
             "name": "body",
-            "description": "You can further limit the results by filling one or more optional *options* fields.\n- If an event id is provided, *from* and *to* are ignored´\n\nTimestamps are in UTC\n\nIf the status is STATUS_LIVE, the *from* and *to* fields are ignored\nIf the status is STATUS_UPCOMING and no *from* field is provided, the *from* field is set to the current time, if no *to* field is provided, the *to* field is set to the *from* field +24h\nIf the status is STATUS_COMPLETED and no *from* field is provided, the *from* field is is set to the *to* field -24h, if no *to* field is provided, the *to* field is set to the current time",
+            "description": "You can further limit the results by filling one or more optional *options* fields.\n- If an event id is provided, *from* and *to* are ignored´\n\nTimestamps are in UTC\n\nIf the state is MATCH_STATE_LIVE, the *from* and *to* fields are ignored\nIf the state is MATCH_STATE_UPCOMING and no *from* field is provided, the *from* field is set to the current time, if no *to* field is provided, the *to* field is set to the *from* field +24h\nIf the state is MATCH_STATE_COMPLETED and no *from* field is provided, the *from* field is is set to the *to* field -24h, if no *to* field is provided, the *to* field is set to the current time",
             "in": "body",
             "required": true,
             "schema": {
@@ -124,8 +124,8 @@
     "MatchHead": {
       "type": "object",
       "properties": {
-        "status": {
-          "$ref": "#/definitions/vlrapiStatus"
+        "state": {
+          "$ref": "#/definitions/apiMatchState"
         },
         "matchId": {
           "type": "string"
@@ -178,8 +178,8 @@
     "apiGetMatchIdsRequest": {
       "type": "object",
       "properties": {
-        "status": {
-          "$ref": "#/definitions/vlrapiStatus"
+        "state": {
+          "$ref": "#/definitions/apiMatchState"
         },
         "from": {
           "type": "string",
@@ -193,7 +193,7 @@
           "$ref": "#/definitions/GetMatchIdsRequestOptions"
         }
       },
-      "description": "You can further limit the results by filling one or more optional *options* fields.\n- If an event id is provided, *from* and *to* are ignored´\n\nTimestamps are in UTC\n\nIf the status is STATUS_LIVE, the *from* and *to* fields are ignored\nIf the status is STATUS_UPCOMING and no *from* field is provided, the *from* field is set to the current time, if no *to* field is provided, the *to* field is set to the *from* field +24h\nIf the status is STATUS_COMPLETED and no *from* field is provided, the *from* field is is set to the *to* field -24h, if no *to* field is provided, the *to* field is set to the current time",
+      "description": "You can further limit the results by filling one or more optional *options* fields.\n- If an event id is provided, *from* and *to* are ignored´\n\nTimestamps are in UTC\n\nIf the state is MATCH_STATE_LIVE, the *from* and *to* fields are ignored\nIf the state is MATCH_STATE_UPCOMING and no *from* field is provided, the *from* field is set to the current time, if no *to* field is provided, the *to* field is set to the *from* field +24h\nIf the state is MATCH_STATE_COMPLETED and no *from* field is provided, the *from* field is is set to the *to* field -24h, if no *to* field is provided, the *to* field is set to the current time",
       "title": "* \nReturns a list of match ids that match the given criteria"
     },
     "apiGetMatchIdsResponse": {
@@ -242,6 +242,16 @@
         }
       }
     },
+    "apiMatchState": {
+      "type": "string",
+      "enum": [
+        "MATCH_STATE_UNSPECIFIED",
+        "MATCH_STATE_LIVE",
+        "MATCH_STATE_UPCOMING",
+        "MATCH_STATE_COMPLETED"
+      ],
+      "default": "MATCH_STATE_UNSPECIFIED"
+    },
     "apiTeam": {
       "type": "object",
       "properties": {
@@ -254,7 +264,16 @@
         }
       }
     },
-    "googlerpcStatus": {
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "rpcStatus": {
       "type": "object",
       "properties": {
         "code": {
@@ -272,25 +291,6 @@
           }
         }
       }
-    },
-    "protobufAny": {
-      "type": "object",
-      "properties": {
-        "@type": {
-          "type": "string"
-        }
-      },
-      "additionalProperties": {}
-    },
-    "vlrapiStatus": {
-      "type": "string",
-      "enum": [
-        "STATUS_UNSPECIFIED",
-        "STATUS_LIVE",
-        "STATUS_UPCOMING",
-        "STATUS_COMPLETED"
-      ],
-      "default": "STATUS_UNSPECIFIED"
     }
   }
 }

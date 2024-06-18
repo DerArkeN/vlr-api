@@ -34,7 +34,7 @@ func GetMatch(matchId string) (*proto.Match, error) {
 
 	match := &proto.Match{
 		Head: &proto.Match_Head{
-			Status:  getProtoStatus(smatch.Versus.Notes),
+			State:   getProtoMatchState(smatch.Versus.Notes),
 			MatchId: matchId,
 			Event: &proto.Match_Head_Event{
 				EventId: smatch.Super.EventId,
@@ -96,17 +96,17 @@ func getRounds(rounds []string) ([]*proto.Match_Map_Round, error) {
 	return protoRounds, nil
 }
 
-func getProtoStatus(notes []string) proto.Status {
+func getProtoMatchState(notes []string) proto.MatchState {
 	for _, note := range notes {
 		if note == "live" {
-			return proto.Status_STATUS_LIVE
+			return proto.MatchState_MATCH_STATE_LIVE
 		}
 		if strings.Contains(note, "h") || strings.Contains(note, "m") {
-			return proto.Status_STATUS_UPCOMING
+			return proto.MatchState_MATCH_STATE_UPCOMING
 		}
 		if note == "final" || strings.Contains(note, "forfeited") {
-			return proto.Status_STATUS_COMPLETED
+			return proto.MatchState_MATCH_STATE_COMPLETED
 		}
 	}
-	return proto.Status_STATUS_UNSPECIFIED
+	return proto.MatchState_MATCH_STATE_UNSPECIFIED
 }
