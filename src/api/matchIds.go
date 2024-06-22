@@ -6,8 +6,7 @@ import (
 	"time"
 
 	proto "github.com/derarken/vlr-api/gen/vlr/api"
-	scraper_location "github.com/derarken/vlr-api/src/scraper/location"
-	scraper_matches "github.com/derarken/vlr-api/src/scraper/matches"
+	"github.com/derarken/vlr-api/src/scrapers"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -49,38 +48,38 @@ func GetMatchIds(request *proto.GetMatchIdsRequest) ([]string, error) {
 }
 
 func getLiveMatches(opt *proto.GetMatchIdsRequest_Options) ([]string, error) {
-	var matches []*scraper_matches.Match
+	var matchIds []*scrapers.MatchIds
 	page := 1
 	for {
-		var newMatches []*scraper_matches.Match
+		var newMatchIds []*scrapers.MatchIds
 		var err error
 		if opt != nil && opt.EventId != "" {
-			newMatches, err = scraper_matches.ScrapeEventMatches(opt.EventId)
+			newMatchIds, err = scrapers.ScrapeEventMatches(opt.EventId)
 			if err != nil {
 				return nil, err
 			}
-			matches = append(matches, newMatches...)
+			matchIds = append(matchIds, newMatchIds...)
 			break
 		} else {
-			newMatches, err = scraper_matches.ScrapeMatches(page)
+			newMatchIds, err = scrapers.ScrapeMatches(page)
 		}
-		if err == scraper_matches.ErrNoMatches {
+		if err == scrapers.ErrNoMatchIds {
 			break
 		}
 		if err != nil {
 			return nil, err
 		}
-		matches = append(matches, newMatches...)
+		matchIds = append(matchIds, newMatchIds...)
 
-		lastMatch := newMatches[len(newMatches)-1]
-		if lastMatch.State.State != string(scraper_matches.VLR_STATE_LIVE) {
+		lastMatchId := newMatchIds[len(newMatchIds)-1]
+		if lastMatchId.State.State != string(scrapers.VLR_STATE_LIVE) {
 			break
 		}
 
 		page++
 	}
 
-	return getIdsByStateAndTime(matches, scraper_matches.VLR_STATE_LIVE, nil, time.Time{}, time.Time{})
+	return getIdsByStateAndTime(matchIds, scrapers.VLR_STATE_LIVE, nil, time.Time{}, time.Time{})
 }
 
 func validateUpcomingTimes(frompb *timestamppb.Timestamp, topb *timestamppb.Timestamp) (time.Time, time.Time, error) {
@@ -110,38 +109,38 @@ func validateUpcomingTimes(frompb *timestamppb.Timestamp, topb *timestamppb.Time
 }
 
 func getUpcomingMatchIds(from time.Time, to time.Time, opt *proto.GetMatchIdsRequest_Options) ([]string, error) {
-	loc, err := scraper_location.GetLocation()
+	loc, err := scrapers.GetLocation()
 	if err != nil {
 		return nil, err
 	}
 
-	var matches []*scraper_matches.Match
+	var matchIds []*scrapers.MatchIds
 	page := 1
 	for {
-		var newMatches []*scraper_matches.Match
+		var newMatchIds []*scrapers.MatchIds
 		var err error
 		if opt != nil && opt.EventId != "" {
-			newMatches, err = scraper_matches.ScrapeEventMatches(opt.EventId)
+			newMatchIds, err = scrapers.ScrapeEventMatches(opt.EventId)
 			if err != nil {
 				return nil, err
 			}
-			matches = append(matches, newMatches...)
+			matchIds = append(matchIds, newMatchIds...)
 			from = time.Time{}
 			to = time.Time{}
 			break
 		} else {
-			newMatches, err = scraper_matches.ScrapeMatches(page)
+			newMatchIds, err = scrapers.ScrapeMatches(page)
 		}
-		if err == scraper_matches.ErrNoMatches {
+		if err == scrapers.ErrNoMatchIds {
 			break
 		}
 		if err != nil {
 			return nil, err
 		}
-		matches = append(matches, newMatches...)
+		matchIds = append(matchIds, newMatchIds...)
 
-		lastMatch := newMatches[len(newMatches)-1]
-		matchTime, err := lastMatch.GetUtcTime(loc)
+		lastMatchId := newMatchIds[len(newMatchIds)-1]
+		matchTime, err := lastMatchId.GetUtcTime(loc)
 		if err != nil {
 			return nil, err
 		}
@@ -153,7 +152,7 @@ func getUpcomingMatchIds(from time.Time, to time.Time, opt *proto.GetMatchIdsReq
 		page++
 	}
 
-	return getIdsByStateAndTime(matches, scraper_matches.VLR_STATE_UPCOMING, loc, from, to)
+	return getIdsByStateAndTime(matchIds, scrapers.VLR_STATE_UPCOMING, loc, from, to)
 }
 
 func validateCompletedTimes(frompb *timestamppb.Timestamp, topb *timestamppb.Timestamp) (time.Time, time.Time, error) {
@@ -186,38 +185,38 @@ func validateCompletedTimes(frompb *timestamppb.Timestamp, topb *timestamppb.Tim
 }
 
 func getCompletedMatchIds(from time.Time, to time.Time, opt *proto.GetMatchIdsRequest_Options) ([]string, error) {
-	loc, err := scraper_location.GetLocation()
+	loc, err := scrapers.GetLocation()
 	if err != nil {
 		return nil, err
 	}
 
-	var matches []*scraper_matches.Match
+	var matchIds []*scrapers.MatchIds
 	page := 1
 	for {
-		var newMatches []*scraper_matches.Match
+		var newMatchIds []*scrapers.MatchIds
 		var err error
 		if opt != nil && opt.EventId != "" {
-			newMatches, err = scraper_matches.ScrapeEventMatches(opt.EventId)
+			newMatchIds, err = scrapers.ScrapeEventMatches(opt.EventId)
 			if err != nil {
 				return nil, err
 			}
-			matches = append(matches, newMatches...)
+			matchIds = append(matchIds, newMatchIds...)
 			from = time.Time{}
 			to = time.Time{}
 			break
 		} else {
-			newMatches, err = scraper_matches.ScrapeResults(page)
+			newMatchIds, err = scrapers.ScrapeResults(page)
 		}
-		if err == scraper_matches.ErrNoMatches {
+		if err == scrapers.ErrNoMatchIds {
 			break
 		}
 		if err != nil {
 			return nil, err
 		}
-		matches = append(matches, newMatches...)
+		matchIds = append(matchIds, newMatchIds...)
 
-		lastMatch := newMatches[len(newMatches)-1]
-		matchTime, err := lastMatch.GetUtcTime(loc)
+		lastMatchId := newMatchIds[len(newMatchIds)-1]
+		matchTime, err := lastMatchId.GetUtcTime(loc)
 		if err != nil {
 			return nil, err
 		}
@@ -229,10 +228,10 @@ func getCompletedMatchIds(from time.Time, to time.Time, opt *proto.GetMatchIdsRe
 		page++
 	}
 
-	return getIdsByStateAndTime(matches, scraper_matches.VLR_STATE_COMPLETED, loc, from, to)
+	return getIdsByStateAndTime(matchIds, scrapers.VLR_STATE_COMPLETED, loc, from, to)
 }
 
-func getIdsByStateAndTime(matches []*scraper_matches.Match, state scraper_matches.VlrState, loc *time.Location, from time.Time, to time.Time) ([]string, error) {
+func getIdsByStateAndTime(matches []*scrapers.MatchIds, state scrapers.VlrState, loc *time.Location, from time.Time, to time.Time) ([]string, error) {
 	var ids []string
 
 	for _, match := range matches {

@@ -1,4 +1,4 @@
-package scraper_match
+package scrapers
 
 import (
 	"errors"

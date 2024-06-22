@@ -1,4 +1,4 @@
-package scraper_location
+package scrapers
 
 import (
 	"fmt"

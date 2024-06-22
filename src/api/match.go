@@ -5,12 +5,12 @@ import (
 	"strings"
 
 	proto "github.com/derarken/vlr-api/gen/vlr/api"
-	scraper_match "github.com/derarken/vlr-api/src/scraper/match"
+	"github.com/derarken/vlr-api/src/scrapers"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func GetMatch(matchId string) (*proto.Match, error) {
-	smatch, err := scraper_match.ScrapeMatchDetail(matchId)
+	smatch, err := scrapers.ScrapeMatchDetail(matchId)
 	if err != nil {
 		return nil, err
 	}
@@ -23,7 +23,7 @@ func GetMatch(matchId string) (*proto.Match, error) {
 	score1 := 0
 	score2 := 0
 	score1, score2, err = smatch.GetScore()
-	if err != nil && err != scraper_match.ErrInvalidScore {
+	if err != nil && err != scrapers.ErrInvalidScore {
 		return nil, err
 	}
 
@@ -61,7 +61,7 @@ func GetMatch(matchId string) (*proto.Match, error) {
 	return match, nil
 }
 
-func getMaps(maps []*scraper_match.Map) ([]*proto.Match_Map, error) {
+func getMaps(maps []*scrapers.Map) ([]*proto.Match_Map, error) {
 	var protoMaps []*proto.Match_Map
 	for _, map_ := range maps {
 		protoRounds, err := getRounds(map_.Rounds)

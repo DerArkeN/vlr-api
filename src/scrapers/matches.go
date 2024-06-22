@@ -1,4 +1,4 @@
-package scraper_matches
+package scrapers
 
 import (
 	"errors"
@@ -18,9 +18,9 @@ const (
 	VLR_STATE_COMPLETED VlrState = "Completed"
 )
 
-var ErrNoMatches = errors.New("no matches found")
+var ErrNoMatchIds = errors.New("no matches found")
 
-type Match struct {
+type MatchIds struct {
 	MatchId string
 	State   *State `selector:".match-item-eta"`
 	Date    string `selector:".match-item-date"`
@@ -48,23 +48,23 @@ type State struct {
 // }
 
 // Fetches https://vlr.gg/matches/results
-func ScrapeResults(page int) ([]*Match, error) {
+func ScrapeResults(page int) ([]*MatchIds, error) {
 	return scrapeMatches("https://vlr.gg/matches/results/?page=" + fmt.Sprint(page))
 }
 
 // Fetches https://vlr.gg/matches
-func ScrapeMatches(page int) ([]*Match, error) {
+func ScrapeMatches(page int) ([]*MatchIds, error) {
 	return scrapeMatches("https://vlr.gg/matches/?page=" + fmt.Sprint(page))
 }
 
-func ScrapeEventMatches(eventId string) ([]*Match, error) {
+func ScrapeEventMatches(eventId string) ([]*MatchIds, error) {
 	return scrapeMatches("https://www.vlr.gg/event/matches/" + eventId + "/?series_id=all&group=all")
 }
 
-func scrapeMatches(url string) ([]*Match, error) {
+func scrapeMatches(url string) ([]*MatchIds, error) {
 	c := colly.NewCollector()
 
-	matches := []*Match{}
+	matches := []*MatchIds{}
 
 	c.OnHTML(".col", func(column *colly.HTMLElement) {
 		var currDate string
@@ -83,7 +83,7 @@ func scrapeMatches(url string) ([]*Match, error) {
 
 			if colEntry.Attr("class") == "wf-card" {
 				colEntry.ForEach("a.match-item", func(_ int, matchEntry *colly.HTMLElement) {
-					match := &Match{}
+					match := &MatchIds{}
 					err := matchEntry.Unmarshal(match)
 					if err != nil {
 						log.Println("Error unmarshalling match: ", err)
@@ -116,13 +116,13 @@ func scrapeMatches(url string) ([]*Match, error) {
 	}
 
 	if len(matches) == 0 {
-		return nil, ErrNoMatches
+		return nil, ErrNoMatchIds
 	}
 
 	return matches, nil
 }
 
-func (m *Match) GetUtcTime(location *time.Location) (time.Time, error) {
+func (m *MatchIds) GetUtcTime(location *time.Location) (time.Time, error) {
 	if m.Time == "TBD" {
 		m.Time = "00:00 AM"
 	}
