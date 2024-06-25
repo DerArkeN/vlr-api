@@ -158,7 +158,7 @@
       "type": "object",
       "properties": {
         "team1": {
-          "$ref": "#/definitions/apiTeam"
+          "$ref": "#/definitions/VersusTeam"
         },
         "score1": {
           "type": "integer",
@@ -166,12 +166,24 @@
           "title": "the map score of the first team"
         },
         "team2": {
-          "$ref": "#/definitions/apiTeam"
+          "$ref": "#/definitions/VersusTeam"
         },
         "score2": {
           "type": "integer",
           "format": "int32",
           "title": "the map score of the second team"
+        }
+      }
+    },
+    "VersusTeam": {
+      "type": "object",
+      "properties": {
+        "teamId": {
+          "type": "string",
+          "title": "vlr.gg/team/{team_id}"
+        },
+        "name": {
+          "type": "string"
         }
       }
     },
@@ -251,18 +263,6 @@
         "MATCH_STATE_COMPLETED"
       ],
       "default": "MATCH_STATE_UNSPECIFIED"
-    },
-    "apiTeam": {
-      "type": "object",
-      "properties": {
-        "teamId": {
-          "type": "string",
-          "title": "vlr.gg/team/{team_id}"
-        },
-        "name": {
-          "type": "string"
-        }
-      }
     },
     "protobufAny": {
       "type": "object",

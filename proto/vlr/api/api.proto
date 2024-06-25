@@ -28,6 +28,12 @@ message Match {
     Head head = 1;
 
     message Versus {
+        message Team {
+            // vlr.gg/team/{team_id}
+            string team_id = 1;
+            string name = 2;
+        }
+
         Team team1 = 1;
         // the map score of the first team
         int32 score1 = 2;
@@ -49,10 +55,4 @@ message Match {
         repeated Round rounds = 3;
     }
     repeated Map maps = 3;
-}
-
-message Team {
-    // vlr.gg/team/{team_id}
-    string team_id = 1;
-    string name = 2;
 }

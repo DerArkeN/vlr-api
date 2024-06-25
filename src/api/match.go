@@ -44,12 +44,12 @@ func GetMatch(matchId string) (*proto.Match, error) {
 			DateTime: timestamppb.New(utcTime),
 		},
 		Versus: &proto.Match_Versus{
-			Team1: &proto.Team{
+			Team1: &proto.Match_Versus_Team{
 				TeamId: smatch.Versus.Team1Id,
 				Name:   smatch.Versus.Team1Name,
 			},
 			Score1: int32(score1),
-			Team2: &proto.Team{
+			Team2: &proto.Match_Versus_Team{
 				TeamId: smatch.Versus.Team2Id,
 				Name:   smatch.Versus.Team2Name,
 			},
