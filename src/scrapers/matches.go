@@ -10,12 +10,12 @@ import (
 	"github.com/gocolly/colly"
 )
 
-type VlrState string
+type MatchState string
 
 const (
-	VLR_STATE_LIVE      VlrState = "LIVE"
-	VLR_STATE_UPCOMING  VlrState = "Upcoming"
-	VLR_STATE_COMPLETED VlrState = "Completed"
+	MATCH_STATE_LIVE      MatchState = "LIVE"
+	MATCH_STATE_UPCOMING  MatchState = "Upcoming"
+	MATCH_STATE_COMPLETED MatchState = "Completed"
 )
 
 var ErrNoMatchIds = errors.New("no matches found")
