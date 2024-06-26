@@ -73,6 +73,81 @@ func (MatchState) EnumDescriptor() ([]byte, []int) {
 	return file_vlr_api_api_proto_rawDescGZIP(), []int{0}
 }
 
+type RosterEntryRole int32
+
+const (
+	RosterEntryRole_ROSTER_ENTRY_ROLE_UNSPECIFIED RosterEntryRole = 0
+	RosterEntryRole_ROSTER_ENTRY_ROLE_INACTIVE    RosterEntryRole = 1
+	// player roles
+	RosterEntryRole_ROSTER_ENTRY_ROLE_PLAYER   RosterEntryRole = 2
+	RosterEntryRole_ROSTER_ENTRY_ROLE_SUB      RosterEntryRole = 3
+	RosterEntryRole_ROSTER_ENTRY_ROLE_STAND_IN RosterEntryRole = 4
+	// staff roles
+	RosterEntryRole_ROSTER_ENTRY_ROLE_COACH             RosterEntryRole = 7
+	RosterEntryRole_ROSTER_ENTRY_ROLE_HEAD_COACH        RosterEntryRole = 8
+	RosterEntryRole_ROSTER_ENTRY_ROLE_ASSISTANT_COACH   RosterEntryRole = 9
+	RosterEntryRole_ROSTER_ENTRY_ROLE_PERFORMANCE_COACH RosterEntryRole = 10
+	RosterEntryRole_ROSTER_ENTRY_ROLE_ANALYST           RosterEntryRole = 11
+	RosterEntryRole_ROSTER_ENTRY_ROLE_MANAGER           RosterEntryRole = 12
+)
+
+// Enum value maps for RosterEntryRole.
+var (
+	RosterEntryRole_name = map[int32]string{
+		0:  "ROSTER_ENTRY_ROLE_UNSPECIFIED",
+		1:  "ROSTER_ENTRY_ROLE_INACTIVE",
+		2:  "ROSTER_ENTRY_ROLE_PLAYER",
+		3:  "ROSTER_ENTRY_ROLE_SUB",
+		4:  "ROSTER_ENTRY_ROLE_STAND_IN",
+		7:  "ROSTER_ENTRY_ROLE_COACH",
+		8:  "ROSTER_ENTRY_ROLE_HEAD_COACH",
+		9:  "ROSTER_ENTRY_ROLE_ASSISTANT_COACH",
+		10: "ROSTER_ENTRY_ROLE_PERFORMANCE_COACH",
+		11: "ROSTER_ENTRY_ROLE_ANALYST",
+		12: "ROSTER_ENTRY_ROLE_MANAGER",
+	}
+	RosterEntryRole_value = map[string]int32{
+		"ROSTER_ENTRY_ROLE_UNSPECIFIED":       0,
+		"ROSTER_ENTRY_ROLE_INACTIVE":          1,
+		"ROSTER_ENTRY_ROLE_PLAYER":            2,
+		"ROSTER_ENTRY_ROLE_SUB":               3,
+		"ROSTER_ENTRY_ROLE_STAND_IN":          4,
+		"ROSTER_ENTRY_ROLE_COACH":             7,
+		"ROSTER_ENTRY_ROLE_HEAD_COACH":        8,
+		"ROSTER_ENTRY_ROLE_ASSISTANT_COACH":   9,
+		"ROSTER_ENTRY_ROLE_PERFORMANCE_COACH": 10,
+		"ROSTER_ENTRY_ROLE_ANALYST":           11,
+		"ROSTER_ENTRY_ROLE_MANAGER":           12,
+	}
+)
+
+func (x RosterEntryRole) Enum() *RosterEntryRole {
+	p := new(RosterEntryRole)
+	*p = x
+	return p
+}
+
+func (x RosterEntryRole) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (RosterEntryRole) Descriptor() protoreflect.EnumDescriptor {
+	return file_vlr_api_api_proto_enumTypes[1].Descriptor()
+}
+
+func (RosterEntryRole) Type() protoreflect.EnumType {
+	return &file_vlr_api_api_proto_enumTypes[1]
+}
+
+func (x RosterEntryRole) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use RosterEntryRole.Descriptor instead.
+func (RosterEntryRole) EnumDescriptor() ([]byte, []int) {
+	return file_vlr_api_api_proto_rawDescGZIP(), []int{1}
+}
+
 type Match struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -136,6 +211,61 @@ func (x *Match) GetMaps() []*Match_Map {
 	return nil
 }
 
+type Team struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Head   *Team_Head   `protobuf:"bytes,1,opt,name=head,proto3" json:"head,omitempty"`
+	Roster *Team_Roster `protobuf:"bytes,2,opt,name=roster,proto3" json:"roster,omitempty"`
+}
+
+func (x *Team) Reset() {
+	*x = Team{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_vlr_api_api_proto_msgTypes[1]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *Team) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Team) ProtoMessage() {}
+
+func (x *Team) ProtoReflect() protoreflect.Message {
+	mi := &file_vlr_api_api_proto_msgTypes[1]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Team.ProtoReflect.Descriptor instead.
+func (*Team) Descriptor() ([]byte, []int) {
+	return file_vlr_api_api_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *Team) GetHead() *Team_Head {
+	if x != nil {
+		return x.Head
+	}
+	return nil
+}
+
+func (x *Team) GetRoster() *Team_Roster {
+	if x != nil {
+		return x.Roster
+	}
+	return nil
+}
+
 type Match_Head struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -150,7 +280,7 @@ type Match_Head struct {
 func (x *Match_Head) Reset() {
 	*x = Match_Head{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_vlr_api_api_proto_msgTypes[1]
+		mi := &file_vlr_api_api_proto_msgTypes[2]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -163,7 +293,7 @@ func (x *Match_Head) String() string {
 func (*Match_Head) ProtoMessage() {}
 
 func (x *Match_Head) ProtoReflect() protoreflect.Message {
-	mi := &file_vlr_api_api_proto_msgTypes[1]
+	mi := &file_vlr_api_api_proto_msgTypes[2]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -223,7 +353,7 @@ type Match_Versus struct {
 func (x *Match_Versus) Reset() {
 	*x = Match_Versus{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_vlr_api_api_proto_msgTypes[2]
+		mi := &file_vlr_api_api_proto_msgTypes[3]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -236,7 +366,7 @@ func (x *Match_Versus) String() string {
 func (*Match_Versus) ProtoMessage() {}
 
 func (x *Match_Versus) ProtoReflect() protoreflect.Message {
-	mi := &file_vlr_api_api_proto_msgTypes[2]
+	mi := &file_vlr_api_api_proto_msgTypes[3]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -292,7 +422,7 @@ type Match_Map struct {
 func (x *Match_Map) Reset() {
 	*x = Match_Map{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_vlr_api_api_proto_msgTypes[3]
+		mi := &file_vlr_api_api_proto_msgTypes[4]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -305,7 +435,7 @@ func (x *Match_Map) String() string {
 func (*Match_Map) ProtoMessage() {}
 
 func (x *Match_Map) ProtoReflect() protoreflect.Message {
-	mi := &file_vlr_api_api_proto_msgTypes[3]
+	mi := &file_vlr_api_api_proto_msgTypes[4]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -349,7 +479,7 @@ type Match_Head_Event struct {
 func (x *Match_Head_Event) Reset() {
 	*x = Match_Head_Event{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_vlr_api_api_proto_msgTypes[4]
+		mi := &file_vlr_api_api_proto_msgTypes[5]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -362,7 +492,7 @@ func (x *Match_Head_Event) String() string {
 func (*Match_Head_Event) ProtoMessage() {}
 
 func (x *Match_Head_Event) ProtoReflect() protoreflect.Message {
-	mi := &file_vlr_api_api_proto_msgTypes[4]
+	mi := &file_vlr_api_api_proto_msgTypes[5]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -412,7 +542,7 @@ type Match_Versus_Team struct {
 func (x *Match_Versus_Team) Reset() {
 	*x = Match_Versus_Team{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_vlr_api_api_proto_msgTypes[5]
+		mi := &file_vlr_api_api_proto_msgTypes[6]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -425,7 +555,7 @@ func (x *Match_Versus_Team) String() string {
 func (*Match_Versus_Team) ProtoMessage() {}
 
 func (x *Match_Versus_Team) ProtoReflect() protoreflect.Message {
-	mi := &file_vlr_api_api_proto_msgTypes[5]
+	mi := &file_vlr_api_api_proto_msgTypes[6]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -469,7 +599,7 @@ type Match_Map_Round struct {
 func (x *Match_Map_Round) Reset() {
 	*x = Match_Map_Round{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_vlr_api_api_proto_msgTypes[6]
+		mi := &file_vlr_api_api_proto_msgTypes[7]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -482,7 +612,7 @@ func (x *Match_Map_Round) String() string {
 func (*Match_Map_Round) ProtoMessage() {}
 
 func (x *Match_Map_Round) ProtoReflect() protoreflect.Message {
-	mi := &file_vlr_api_api_proto_msgTypes[6]
+	mi := &file_vlr_api_api_proto_msgTypes[7]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -510,6 +640,205 @@ func (x *Match_Map_Round) GetScore2() int32 {
 		return x.Score2
 	}
 	return 0
+}
+
+type Team_Head struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// vlr.gg/team/{team_id}
+	TeamId  string `protobuf:"bytes,1,opt,name=team_id,json=teamId,proto3" json:"team_id,omitempty"`
+	Name    string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	Tricode string `protobuf:"bytes,3,opt,name=tricode,proto3" json:"tricode,omitempty"`
+	Region  string `protobuf:"bytes,4,opt,name=region,proto3" json:"region,omitempty"`
+}
+
+func (x *Team_Head) Reset() {
+	*x = Team_Head{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_vlr_api_api_proto_msgTypes[8]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *Team_Head) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Team_Head) ProtoMessage() {}
+
+func (x *Team_Head) ProtoReflect() protoreflect.Message {
+	mi := &file_vlr_api_api_proto_msgTypes[8]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Team_Head.ProtoReflect.Descriptor instead.
+func (*Team_Head) Descriptor() ([]byte, []int) {
+	return file_vlr_api_api_proto_rawDescGZIP(), []int{1, 0}
+}
+
+func (x *Team_Head) GetTeamId() string {
+	if x != nil {
+		return x.TeamId
+	}
+	return ""
+}
+
+func (x *Team_Head) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *Team_Head) GetTricode() string {
+	if x != nil {
+		return x.Tricode
+	}
+	return ""
+}
+
+func (x *Team_Head) GetRegion() string {
+	if x != nil {
+		return x.Region
+	}
+	return ""
+}
+
+type Team_Roster struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Players []*Team_Roster_Entry `protobuf:"bytes,1,rep,name=players,proto3" json:"players,omitempty"`
+	Staff   []*Team_Roster_Entry `protobuf:"bytes,2,rep,name=staff,proto3" json:"staff,omitempty"`
+}
+
+func (x *Team_Roster) Reset() {
+	*x = Team_Roster{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_vlr_api_api_proto_msgTypes[9]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *Team_Roster) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Team_Roster) ProtoMessage() {}
+
+func (x *Team_Roster) ProtoReflect() protoreflect.Message {
+	mi := &file_vlr_api_api_proto_msgTypes[9]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Team_Roster.ProtoReflect.Descriptor instead.
+func (*Team_Roster) Descriptor() ([]byte, []int) {
+	return file_vlr_api_api_proto_rawDescGZIP(), []int{1, 1}
+}
+
+func (x *Team_Roster) GetPlayers() []*Team_Roster_Entry {
+	if x != nil {
+		return x.Players
+	}
+	return nil
+}
+
+func (x *Team_Roster) GetStaff() []*Team_Roster_Entry {
+	if x != nil {
+		return x.Staff
+	}
+	return nil
+}
+
+type Team_Roster_Entry struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// vlr.gg/player/{player_id}
+	PlayerId string          `protobuf:"bytes,1,opt,name=player_id,json=playerId,proto3" json:"player_id,omitempty"`
+	Name     string          `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	RealName string          `protobuf:"bytes,3,opt,name=real_name,json=realName,proto3" json:"real_name,omitempty"`
+	Role     RosterEntryRole `protobuf:"varint,4,opt,name=role,proto3,enum=vlr.api.RosterEntryRole" json:"role,omitempty"`
+}
+
+func (x *Team_Roster_Entry) Reset() {
+	*x = Team_Roster_Entry{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_vlr_api_api_proto_msgTypes[10]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *Team_Roster_Entry) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Team_Roster_Entry) ProtoMessage() {}
+
+func (x *Team_Roster_Entry) ProtoReflect() protoreflect.Message {
+	mi := &file_vlr_api_api_proto_msgTypes[10]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Team_Roster_Entry.ProtoReflect.Descriptor instead.
+func (*Team_Roster_Entry) Descriptor() ([]byte, []int) {
+	return file_vlr_api_api_proto_rawDescGZIP(), []int{1, 1, 0}
+}
+
+func (x *Team_Roster_Entry) GetPlayerId() string {
+	if x != nil {
+		return x.PlayerId
+	}
+	return ""
+}
+
+func (x *Team_Roster_Entry) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *Team_Roster_Entry) GetRealName() string {
+	if x != nil {
+		return x.RealName
+	}
+	return ""
+}
+
+func (x *Team_Roster_Entry) GetRole() RosterEntryRole {
+	if x != nil {
+		return x.Role
+	}
+	return RosterEntryRole_ROSTER_ENTRY_ROLE_UNSPECIFIED
 }
 
 var File_vlr_api_api_proto protoreflect.FileDescriptor
@@ -565,17 +894,69 @@ var file_vlr_api_api_proto_rawDesc = []byte{
 	0x1a, 0x37, 0x0a, 0x05, 0x52, 0x6f, 0x75, 0x6e, 0x64, 0x12, 0x16, 0x0a, 0x06, 0x73, 0x63, 0x6f,
 	0x72, 0x65, 0x31, 0x18, 0x02, 0x20, 0x01, 0x28, 0x05, 0x52, 0x06, 0x73, 0x63, 0x6f, 0x72, 0x65,
 	0x31, 0x12, 0x16, 0x0a, 0x06, 0x73, 0x63, 0x6f, 0x72, 0x65, 0x32, 0x18, 0x03, 0x20, 0x01, 0x28,
-	0x05, 0x52, 0x06, 0x73, 0x63, 0x6f, 0x72, 0x65, 0x32, 0x2a, 0x74, 0x0a, 0x0a, 0x4d, 0x61, 0x74,
-	0x63, 0x68, 0x53, 0x74, 0x61, 0x74, 0x65, 0x12, 0x1b, 0x0a, 0x17, 0x4d, 0x41, 0x54, 0x43, 0x48,
-	0x5f, 0x53, 0x54, 0x41, 0x54, 0x45, 0x5f, 0x55, 0x4e, 0x53, 0x50, 0x45, 0x43, 0x49, 0x46, 0x49,
-	0x45, 0x44, 0x10, 0x00, 0x12, 0x14, 0x0a, 0x10, 0x4d, 0x41, 0x54, 0x43, 0x48, 0x5f, 0x53, 0x54,
-	0x41, 0x54, 0x45, 0x5f, 0x4c, 0x49, 0x56, 0x45, 0x10, 0x01, 0x12, 0x18, 0x0a, 0x14, 0x4d, 0x41,
-	0x54, 0x43, 0x48, 0x5f, 0x53, 0x54, 0x41, 0x54, 0x45, 0x5f, 0x55, 0x50, 0x43, 0x4f, 0x4d, 0x49,
-	0x4e, 0x47, 0x10, 0x02, 0x12, 0x19, 0x0a, 0x15, 0x4d, 0x41, 0x54, 0x43, 0x48, 0x5f, 0x53, 0x54,
-	0x41, 0x54, 0x45, 0x5f, 0x43, 0x4f, 0x4d, 0x50, 0x4c, 0x45, 0x54, 0x45, 0x44, 0x10, 0x03, 0x42,
-	0x23, 0x5a, 0x21, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x64, 0x65,
-	0x72, 0x61, 0x72, 0x6b, 0x65, 0x6e, 0x2f, 0x76, 0x6c, 0x72, 0x2d, 0x61, 0x70, 0x69, 0x2f, 0x70,
-	0x72, 0x6f, 0x74, 0x6f, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x05, 0x52, 0x06, 0x73, 0x63, 0x6f, 0x72, 0x65, 0x32, 0x22, 0xbc, 0x03, 0x0a, 0x04, 0x54, 0x65,
+	0x61, 0x6d, 0x12, 0x26, 0x0a, 0x04, 0x68, 0x65, 0x61, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b,
+	0x32, 0x12, 0x2e, 0x76, 0x6c, 0x72, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x54, 0x65, 0x61, 0x6d, 0x2e,
+	0x48, 0x65, 0x61, 0x64, 0x52, 0x04, 0x68, 0x65, 0x61, 0x64, 0x12, 0x2c, 0x0a, 0x06, 0x72, 0x6f,
+	0x73, 0x74, 0x65, 0x72, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x14, 0x2e, 0x76, 0x6c, 0x72,
+	0x2e, 0x61, 0x70, 0x69, 0x2e, 0x54, 0x65, 0x61, 0x6d, 0x2e, 0x52, 0x6f, 0x73, 0x74, 0x65, 0x72,
+	0x52, 0x06, 0x72, 0x6f, 0x73, 0x74, 0x65, 0x72, 0x1a, 0x65, 0x0a, 0x04, 0x48, 0x65, 0x61, 0x64,
+	0x12, 0x17, 0x0a, 0x07, 0x74, 0x65, 0x61, 0x6d, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28,
+	0x09, 0x52, 0x06, 0x74, 0x65, 0x61, 0x6d, 0x49, 0x64, 0x12, 0x12, 0x0a, 0x04, 0x6e, 0x61, 0x6d,
+	0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x12, 0x18, 0x0a,
+	0x07, 0x74, 0x72, 0x69, 0x63, 0x6f, 0x64, 0x65, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07,
+	0x74, 0x72, 0x69, 0x63, 0x6f, 0x64, 0x65, 0x12, 0x16, 0x0a, 0x06, 0x72, 0x65, 0x67, 0x69, 0x6f,
+	0x6e, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x72, 0x65, 0x67, 0x69, 0x6f, 0x6e, 0x1a,
+	0xf6, 0x01, 0x0a, 0x06, 0x52, 0x6f, 0x73, 0x74, 0x65, 0x72, 0x12, 0x34, 0x0a, 0x07, 0x70, 0x6c,
+	0x61, 0x79, 0x65, 0x72, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x76, 0x6c,
+	0x72, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x54, 0x65, 0x61, 0x6d, 0x2e, 0x52, 0x6f, 0x73, 0x74, 0x65,
+	0x72, 0x2e, 0x45, 0x6e, 0x74, 0x72, 0x79, 0x52, 0x07, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x73,
+	0x12, 0x30, 0x0a, 0x05, 0x73, 0x74, 0x61, 0x66, 0x66, 0x18, 0x02, 0x20, 0x03, 0x28, 0x0b, 0x32,
+	0x1a, 0x2e, 0x76, 0x6c, 0x72, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x54, 0x65, 0x61, 0x6d, 0x2e, 0x52,
+	0x6f, 0x73, 0x74, 0x65, 0x72, 0x2e, 0x45, 0x6e, 0x74, 0x72, 0x79, 0x52, 0x05, 0x73, 0x74, 0x61,
+	0x66, 0x66, 0x1a, 0x83, 0x01, 0x0a, 0x05, 0x45, 0x6e, 0x74, 0x72, 0x79, 0x12, 0x1b, 0x0a, 0x09,
+	0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52,
+	0x08, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x12, 0x12, 0x0a, 0x04, 0x6e, 0x61, 0x6d,
+	0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x12, 0x1b, 0x0a,
+	0x09, 0x72, 0x65, 0x61, 0x6c, 0x5f, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09,
+	0x52, 0x08, 0x72, 0x65, 0x61, 0x6c, 0x4e, 0x61, 0x6d, 0x65, 0x12, 0x2c, 0x0a, 0x04, 0x72, 0x6f,
+	0x6c, 0x65, 0x18, 0x04, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x18, 0x2e, 0x76, 0x6c, 0x72, 0x2e, 0x61,
+	0x70, 0x69, 0x2e, 0x52, 0x6f, 0x73, 0x74, 0x65, 0x72, 0x45, 0x6e, 0x74, 0x72, 0x79, 0x52, 0x6f,
+	0x6c, 0x65, 0x52, 0x04, 0x72, 0x6f, 0x6c, 0x65, 0x2a, 0x74, 0x0a, 0x0a, 0x4d, 0x61, 0x74, 0x63,
+	0x68, 0x53, 0x74, 0x61, 0x74, 0x65, 0x12, 0x1b, 0x0a, 0x17, 0x4d, 0x41, 0x54, 0x43, 0x48, 0x5f,
+	0x53, 0x54, 0x41, 0x54, 0x45, 0x5f, 0x55, 0x4e, 0x53, 0x50, 0x45, 0x43, 0x49, 0x46, 0x49, 0x45,
+	0x44, 0x10, 0x00, 0x12, 0x14, 0x0a, 0x10, 0x4d, 0x41, 0x54, 0x43, 0x48, 0x5f, 0x53, 0x54, 0x41,
+	0x54, 0x45, 0x5f, 0x4c, 0x49, 0x56, 0x45, 0x10, 0x01, 0x12, 0x18, 0x0a, 0x14, 0x4d, 0x41, 0x54,
+	0x43, 0x48, 0x5f, 0x53, 0x54, 0x41, 0x54, 0x45, 0x5f, 0x55, 0x50, 0x43, 0x4f, 0x4d, 0x49, 0x4e,
+	0x47, 0x10, 0x02, 0x12, 0x19, 0x0a, 0x15, 0x4d, 0x41, 0x54, 0x43, 0x48, 0x5f, 0x53, 0x54, 0x41,
+	0x54, 0x45, 0x5f, 0x43, 0x4f, 0x4d, 0x50, 0x4c, 0x45, 0x54, 0x45, 0x44, 0x10, 0x03, 0x2a, 0xfa,
+	0x02, 0x0a, 0x0f, 0x52, 0x6f, 0x73, 0x74, 0x65, 0x72, 0x45, 0x6e, 0x74, 0x72, 0x79, 0x52, 0x6f,
+	0x6c, 0x65, 0x12, 0x21, 0x0a, 0x1d, 0x52, 0x4f, 0x53, 0x54, 0x45, 0x52, 0x5f, 0x45, 0x4e, 0x54,
+	0x52, 0x59, 0x5f, 0x52, 0x4f, 0x4c, 0x45, 0x5f, 0x55, 0x4e, 0x53, 0x50, 0x45, 0x43, 0x49, 0x46,
+	0x49, 0x45, 0x44, 0x10, 0x00, 0x12, 0x1e, 0x0a, 0x1a, 0x52, 0x4f, 0x53, 0x54, 0x45, 0x52, 0x5f,
+	0x45, 0x4e, 0x54, 0x52, 0x59, 0x5f, 0x52, 0x4f, 0x4c, 0x45, 0x5f, 0x49, 0x4e, 0x41, 0x43, 0x54,
+	0x49, 0x56, 0x45, 0x10, 0x01, 0x12, 0x1c, 0x0a, 0x18, 0x52, 0x4f, 0x53, 0x54, 0x45, 0x52, 0x5f,
+	0x45, 0x4e, 0x54, 0x52, 0x59, 0x5f, 0x52, 0x4f, 0x4c, 0x45, 0x5f, 0x50, 0x4c, 0x41, 0x59, 0x45,
+	0x52, 0x10, 0x02, 0x12, 0x19, 0x0a, 0x15, 0x52, 0x4f, 0x53, 0x54, 0x45, 0x52, 0x5f, 0x45, 0x4e,
+	0x54, 0x52, 0x59, 0x5f, 0x52, 0x4f, 0x4c, 0x45, 0x5f, 0x53, 0x55, 0x42, 0x10, 0x03, 0x12, 0x1e,
+	0x0a, 0x1a, 0x52, 0x4f, 0x53, 0x54, 0x45, 0x52, 0x5f, 0x45, 0x4e, 0x54, 0x52, 0x59, 0x5f, 0x52,
+	0x4f, 0x4c, 0x45, 0x5f, 0x53, 0x54, 0x41, 0x4e, 0x44, 0x5f, 0x49, 0x4e, 0x10, 0x04, 0x12, 0x1b,
+	0x0a, 0x17, 0x52, 0x4f, 0x53, 0x54, 0x45, 0x52, 0x5f, 0x45, 0x4e, 0x54, 0x52, 0x59, 0x5f, 0x52,
+	0x4f, 0x4c, 0x45, 0x5f, 0x43, 0x4f, 0x41, 0x43, 0x48, 0x10, 0x07, 0x12, 0x20, 0x0a, 0x1c, 0x52,
+	0x4f, 0x53, 0x54, 0x45, 0x52, 0x5f, 0x45, 0x4e, 0x54, 0x52, 0x59, 0x5f, 0x52, 0x4f, 0x4c, 0x45,
+	0x5f, 0x48, 0x45, 0x41, 0x44, 0x5f, 0x43, 0x4f, 0x41, 0x43, 0x48, 0x10, 0x08, 0x12, 0x25, 0x0a,
+	0x21, 0x52, 0x4f, 0x53, 0x54, 0x45, 0x52, 0x5f, 0x45, 0x4e, 0x54, 0x52, 0x59, 0x5f, 0x52, 0x4f,
+	0x4c, 0x45, 0x5f, 0x41, 0x53, 0x53, 0x49, 0x53, 0x54, 0x41, 0x4e, 0x54, 0x5f, 0x43, 0x4f, 0x41,
+	0x43, 0x48, 0x10, 0x09, 0x12, 0x27, 0x0a, 0x23, 0x52, 0x4f, 0x53, 0x54, 0x45, 0x52, 0x5f, 0x45,
+	0x4e, 0x54, 0x52, 0x59, 0x5f, 0x52, 0x4f, 0x4c, 0x45, 0x5f, 0x50, 0x45, 0x52, 0x46, 0x4f, 0x52,
+	0x4d, 0x41, 0x4e, 0x43, 0x45, 0x5f, 0x43, 0x4f, 0x41, 0x43, 0x48, 0x10, 0x0a, 0x12, 0x1d, 0x0a,
+	0x19, 0x52, 0x4f, 0x53, 0x54, 0x45, 0x52, 0x5f, 0x45, 0x4e, 0x54, 0x52, 0x59, 0x5f, 0x52, 0x4f,
+	0x4c, 0x45, 0x5f, 0x41, 0x4e, 0x41, 0x4c, 0x59, 0x53, 0x54, 0x10, 0x0b, 0x12, 0x1d, 0x0a, 0x19,
+	0x52, 0x4f, 0x53, 0x54, 0x45, 0x52, 0x5f, 0x45, 0x4e, 0x54, 0x52, 0x59, 0x5f, 0x52, 0x4f, 0x4c,
+	0x45, 0x5f, 0x4d, 0x41, 0x4e, 0x41, 0x47, 0x45, 0x52, 0x10, 0x0c, 0x42, 0x23, 0x5a, 0x21, 0x67,
+	0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x64, 0x65, 0x72, 0x61, 0x72, 0x6b,
+	0x65, 0x6e, 0x2f, 0x76, 0x6c, 0x72, 0x2d, 0x61, 0x70, 0x69, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f,
+	0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -590,34 +971,44 @@ func file_vlr_api_api_proto_rawDescGZIP() []byte {
 	return file_vlr_api_api_proto_rawDescData
 }
 
-var file_vlr_api_api_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_vlr_api_api_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
+var file_vlr_api_api_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
+var file_vlr_api_api_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
 var file_vlr_api_api_proto_goTypes = []any{
 	(MatchState)(0),               // 0: vlr.api.MatchState
-	(*Match)(nil),                 // 1: vlr.api.Match
-	(*Match_Head)(nil),            // 2: vlr.api.Match.Head
-	(*Match_Versus)(nil),          // 3: vlr.api.Match.Versus
-	(*Match_Map)(nil),             // 4: vlr.api.Match.Map
-	(*Match_Head_Event)(nil),      // 5: vlr.api.Match.Head.Event
-	(*Match_Versus_Team)(nil),     // 6: vlr.api.Match.Versus.Team
-	(*Match_Map_Round)(nil),       // 7: vlr.api.Match.Map.Round
-	(*timestamppb.Timestamp)(nil), // 8: google.protobuf.Timestamp
+	(RosterEntryRole)(0),          // 1: vlr.api.RosterEntryRole
+	(*Match)(nil),                 // 2: vlr.api.Match
+	(*Team)(nil),                  // 3: vlr.api.Team
+	(*Match_Head)(nil),            // 4: vlr.api.Match.Head
+	(*Match_Versus)(nil),          // 5: vlr.api.Match.Versus
+	(*Match_Map)(nil),             // 6: vlr.api.Match.Map
+	(*Match_Head_Event)(nil),      // 7: vlr.api.Match.Head.Event
+	(*Match_Versus_Team)(nil),     // 8: vlr.api.Match.Versus.Team
+	(*Match_Map_Round)(nil),       // 9: vlr.api.Match.Map.Round
+	(*Team_Head)(nil),             // 10: vlr.api.Team.Head
+	(*Team_Roster)(nil),           // 11: vlr.api.Team.Roster
+	(*Team_Roster_Entry)(nil),     // 12: vlr.api.Team.Roster.Entry
+	(*timestamppb.Timestamp)(nil), // 13: google.protobuf.Timestamp
 }
 var file_vlr_api_api_proto_depIdxs = []int32{
-	2, // 0: vlr.api.Match.head:type_name -> vlr.api.Match.Head
-	3, // 1: vlr.api.Match.versus:type_name -> vlr.api.Match.Versus
-	4, // 2: vlr.api.Match.maps:type_name -> vlr.api.Match.Map
-	0, // 3: vlr.api.Match.Head.state:type_name -> vlr.api.MatchState
-	5, // 4: vlr.api.Match.Head.event:type_name -> vlr.api.Match.Head.Event
-	8, // 5: vlr.api.Match.Head.date_time:type_name -> google.protobuf.Timestamp
-	6, // 6: vlr.api.Match.Versus.team1:type_name -> vlr.api.Match.Versus.Team
-	6, // 7: vlr.api.Match.Versus.team2:type_name -> vlr.api.Match.Versus.Team
-	7, // 8: vlr.api.Match.Map.rounds:type_name -> vlr.api.Match.Map.Round
-	9, // [9:9] is the sub-list for method output_type
-	9, // [9:9] is the sub-list for method input_type
-	9, // [9:9] is the sub-list for extension type_name
-	9, // [9:9] is the sub-list for extension extendee
-	0, // [0:9] is the sub-list for field type_name
+	4,  // 0: vlr.api.Match.head:type_name -> vlr.api.Match.Head
+	5,  // 1: vlr.api.Match.versus:type_name -> vlr.api.Match.Versus
+	6,  // 2: vlr.api.Match.maps:type_name -> vlr.api.Match.Map
+	10, // 3: vlr.api.Team.head:type_name -> vlr.api.Team.Head
+	11, // 4: vlr.api.Team.roster:type_name -> vlr.api.Team.Roster
+	0,  // 5: vlr.api.Match.Head.state:type_name -> vlr.api.MatchState
+	7,  // 6: vlr.api.Match.Head.event:type_name -> vlr.api.Match.Head.Event
+	13, // 7: vlr.api.Match.Head.date_time:type_name -> google.protobuf.Timestamp
+	8,  // 8: vlr.api.Match.Versus.team1:type_name -> vlr.api.Match.Versus.Team
+	8,  // 9: vlr.api.Match.Versus.team2:type_name -> vlr.api.Match.Versus.Team
+	9,  // 10: vlr.api.Match.Map.rounds:type_name -> vlr.api.Match.Map.Round
+	12, // 11: vlr.api.Team.Roster.players:type_name -> vlr.api.Team.Roster.Entry
+	12, // 12: vlr.api.Team.Roster.staff:type_name -> vlr.api.Team.Roster.Entry
+	1,  // 13: vlr.api.Team.Roster.Entry.role:type_name -> vlr.api.RosterEntryRole
+	14, // [14:14] is the sub-list for method output_type
+	14, // [14:14] is the sub-list for method input_type
+	14, // [14:14] is the sub-list for extension type_name
+	14, // [14:14] is the sub-list for extension extendee
+	0,  // [0:14] is the sub-list for field type_name
 }
 
 func init() { file_vlr_api_api_proto_init() }
@@ -639,7 +1030,7 @@ func file_vlr_api_api_proto_init() {
 			}
 		}
 		file_vlr_api_api_proto_msgTypes[1].Exporter = func(v any, i int) any {
-			switch v := v.(*Match_Head); i {
+			switch v := v.(*Team); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -651,7 +1042,7 @@ func file_vlr_api_api_proto_init() {
 			}
 		}
 		file_vlr_api_api_proto_msgTypes[2].Exporter = func(v any, i int) any {
-			switch v := v.(*Match_Versus); i {
+			switch v := v.(*Match_Head); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -663,7 +1054,7 @@ func file_vlr_api_api_proto_init() {
 			}
 		}
 		file_vlr_api_api_proto_msgTypes[3].Exporter = func(v any, i int) any {
-			switch v := v.(*Match_Map); i {
+			switch v := v.(*Match_Versus); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -675,7 +1066,7 @@ func file_vlr_api_api_proto_init() {
 			}
 		}
 		file_vlr_api_api_proto_msgTypes[4].Exporter = func(v any, i int) any {
-			switch v := v.(*Match_Head_Event); i {
+			switch v := v.(*Match_Map); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -687,7 +1078,7 @@ func file_vlr_api_api_proto_init() {
 			}
 		}
 		file_vlr_api_api_proto_msgTypes[5].Exporter = func(v any, i int) any {
-			switch v := v.(*Match_Versus_Team); i {
+			switch v := v.(*Match_Head_Event); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -699,7 +1090,55 @@ func file_vlr_api_api_proto_init() {
 			}
 		}
 		file_vlr_api_api_proto_msgTypes[6].Exporter = func(v any, i int) any {
+			switch v := v.(*Match_Versus_Team); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_vlr_api_api_proto_msgTypes[7].Exporter = func(v any, i int) any {
 			switch v := v.(*Match_Map_Round); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_vlr_api_api_proto_msgTypes[8].Exporter = func(v any, i int) any {
+			switch v := v.(*Team_Head); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_vlr_api_api_proto_msgTypes[9].Exporter = func(v any, i int) any {
+			switch v := v.(*Team_Roster); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_vlr_api_api_proto_msgTypes[10].Exporter = func(v any, i int) any {
+			switch v := v.(*Team_Roster_Entry); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -716,8 +1155,8 @@ func file_vlr_api_api_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_vlr_api_api_proto_rawDesc,
-			NumEnums:      1,
-			NumMessages:   7,
+			NumEnums:      2,
+			NumMessages:   11,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

@@ -80,6 +80,38 @@
           "Api"
         ]
       }
+    },
+    "/v1/team": {
+      "post": {
+        "operationId": "Api_GetTeam",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiGetTeamResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/apiGetTeamRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Api"
+        ]
+      }
     }
   },
   "definitions": {
@@ -121,24 +153,6 @@
         }
       }
     },
-    "MatchHead": {
-      "type": "object",
-      "properties": {
-        "state": {
-          "$ref": "#/definitions/apiMatchState"
-        },
-        "matchId": {
-          "type": "string"
-        },
-        "event": {
-          "$ref": "#/definitions/HeadEvent"
-        },
-        "dateTime": {
-          "type": "string",
-          "format": "date-time"
-        }
-      }
-    },
     "MatchMap": {
       "type": "object",
       "properties": {
@@ -158,7 +172,7 @@
       "type": "object",
       "properties": {
         "team1": {
-          "$ref": "#/definitions/VersusTeam"
+          "$ref": "#/definitions/MatchVersusTeam"
         },
         "score1": {
           "type": "integer",
@@ -166,7 +180,7 @@
           "title": "the map score of the first team"
         },
         "team2": {
-          "$ref": "#/definitions/VersusTeam"
+          "$ref": "#/definitions/MatchVersusTeam"
         },
         "score2": {
           "type": "integer",
@@ -175,7 +189,7 @@
         }
       }
     },
-    "VersusTeam": {
+    "MatchVersusTeam": {
       "type": "object",
       "properties": {
         "teamId": {
@@ -184,6 +198,43 @@
         },
         "name": {
           "type": "string"
+        }
+      }
+    },
+    "RosterEntry": {
+      "type": "object",
+      "properties": {
+        "playerId": {
+          "type": "string",
+          "title": "vlr.gg/player/{player_id}"
+        },
+        "name": {
+          "type": "string"
+        },
+        "realName": {
+          "type": "string"
+        },
+        "role": {
+          "$ref": "#/definitions/apiRosterEntryRole"
+        }
+      }
+    },
+    "TeamRoster": {
+      "type": "object",
+      "properties": {
+        "players": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/RosterEntry"
+          }
+        },
+        "staff": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/RosterEntry"
+          }
         }
       }
     },
@@ -236,11 +287,28 @@
         }
       }
     },
+    "apiGetTeamRequest": {
+      "type": "object",
+      "properties": {
+        "teamId": {
+          "type": "string"
+        }
+      },
+      "title": "Returns a team by its id"
+    },
+    "apiGetTeamResponse": {
+      "type": "object",
+      "properties": {
+        "team": {
+          "$ref": "#/definitions/vlrapiTeam"
+        }
+      }
+    },
     "apiMatch": {
       "type": "object",
       "properties": {
         "head": {
-          "$ref": "#/definitions/MatchHead"
+          "$ref": "#/definitions/apiMatchHead"
         },
         "versus": {
           "$ref": "#/definitions/MatchVersus"
@@ -254,6 +322,24 @@
         }
       }
     },
+    "apiMatchHead": {
+      "type": "object",
+      "properties": {
+        "state": {
+          "$ref": "#/definitions/apiMatchState"
+        },
+        "matchId": {
+          "type": "string"
+        },
+        "event": {
+          "$ref": "#/definitions/HeadEvent"
+        },
+        "dateTime": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
     "apiMatchState": {
       "type": "string",
       "enum": [
@@ -263,6 +349,42 @@
         "MATCH_STATE_COMPLETED"
       ],
       "default": "MATCH_STATE_UNSPECIFIED"
+    },
+    "apiRosterEntryRole": {
+      "type": "string",
+      "enum": [
+        "ROSTER_ENTRY_ROLE_UNSPECIFIED",
+        "ROSTER_ENTRY_ROLE_INACTIVE",
+        "ROSTER_ENTRY_ROLE_PLAYER",
+        "ROSTER_ENTRY_ROLE_SUB",
+        "ROSTER_ENTRY_ROLE_STAND_IN",
+        "ROSTER_ENTRY_ROLE_COACH",
+        "ROSTER_ENTRY_ROLE_HEAD_COACH",
+        "ROSTER_ENTRY_ROLE_ASSISTANT_COACH",
+        "ROSTER_ENTRY_ROLE_PERFORMANCE_COACH",
+        "ROSTER_ENTRY_ROLE_ANALYST",
+        "ROSTER_ENTRY_ROLE_MANAGER"
+      ],
+      "default": "ROSTER_ENTRY_ROLE_UNSPECIFIED",
+      "title": "- ROSTER_ENTRY_ROLE_PLAYER: player roles\n - ROSTER_ENTRY_ROLE_COACH: staff roles"
+    },
+    "apiTeamHead": {
+      "type": "object",
+      "properties": {
+        "teamId": {
+          "type": "string",
+          "title": "vlr.gg/team/{team_id}"
+        },
+        "name": {
+          "type": "string"
+        },
+        "tricode": {
+          "type": "string"
+        },
+        "region": {
+          "type": "string"
+        }
+      }
     },
     "protobufAny": {
       "type": "object",
@@ -289,6 +411,17 @@
             "type": "object",
             "$ref": "#/definitions/protobufAny"
           }
+        }
+      }
+    },
+    "vlrapiTeam": {
+      "type": "object",
+      "properties": {
+        "head": {
+          "$ref": "#/definitions/apiTeamHead"
+        },
+        "roster": {
+          "$ref": "#/definitions/TeamRoster"
         }
       }
     }

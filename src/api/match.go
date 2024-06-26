@@ -10,48 +10,48 @@ import (
 )
 
 func GetMatch(matchId string) (*proto.Match, error) {
-	smatch, err := scrapers.ScrapeMatchDetail(matchId)
+	scrapedMatch, err := scrapers.ScrapeMatchDetail(matchId)
 	if err != nil {
 		return nil, err
 	}
 
-	utcTime, err := smatch.GetUtcTime()
+	utcTime, err := scrapedMatch.GetUtcTime()
 	if err != nil {
 		return nil, err
 	}
 
 	score1 := 0
 	score2 := 0
-	score1, score2, err = smatch.GetScore()
+	score1, score2, err = scrapedMatch.GetScore()
 	if err != nil && err != scrapers.ErrInvalidScore {
 		return nil, err
 	}
 
-	maps, err := getMaps(smatch.Maps)
+	maps, err := getMaps(scrapedMatch.Maps)
 	if err != nil {
 		return nil, err
 	}
 
 	match := &proto.Match{
 		Head: &proto.Match_Head{
-			State:   getProtoMatchState(smatch.Versus.Notes),
+			State:   getProtoMatchState(scrapedMatch.Versus.Notes),
 			MatchId: matchId,
 			Event: &proto.Match_Head_Event{
-				EventId: smatch.Super.EventId,
-				Name:    smatch.Super.EventName,
-				Stage:   smatch.Super.Stage,
+				EventId: scrapedMatch.Super.EventId,
+				Name:    scrapedMatch.Super.EventName,
+				Stage:   scrapedMatch.Super.Stage,
 			},
 			DateTime: timestamppb.New(utcTime),
 		},
 		Versus: &proto.Match_Versus{
 			Team1: &proto.Match_Versus_Team{
-				TeamId: smatch.Versus.Team1Id,
-				Name:   smatch.Versus.Team1Name,
+				TeamId: scrapedMatch.Versus.Team1Id,
+				Name:   scrapedMatch.Versus.Team1Name,
 			},
 			Score1: int32(score1),
 			Team2: &proto.Match_Versus_Team{
-				TeamId: smatch.Versus.Team2Id,
-				Name:   smatch.Versus.Team2Name,
+				TeamId: scrapedMatch.Versus.Team2Id,
+				Name:   scrapedMatch.Versus.Team2Name,
 			},
 			Score2: int32(score2),
 		},

@@ -12,6 +12,22 @@ enum MatchState {
     MATCH_STATE_COMPLETED = 3;
 }
 
+enum RosterEntryRole {
+    ROSTER_ENTRY_ROLE_UNSPECIFIED = 0;
+    ROSTER_ENTRY_ROLE_INACTIVE = 1;
+    // player roles
+    ROSTER_ENTRY_ROLE_PLAYER = 2;
+    ROSTER_ENTRY_ROLE_SUB = 3;
+    ROSTER_ENTRY_ROLE_STAND_IN = 4;
+    // staff roles
+    ROSTER_ENTRY_ROLE_COACH = 7;
+    ROSTER_ENTRY_ROLE_HEAD_COACH = 8;
+    ROSTER_ENTRY_ROLE_ASSISTANT_COACH = 9;
+    ROSTER_ENTRY_ROLE_PERFORMANCE_COACH = 10;
+    ROSTER_ENTRY_ROLE_ANALYST = 11;
+    ROSTER_ENTRY_ROLE_MANAGER = 12;
+}
+
 message Match {
     message Head {
         MatchState state = 1;
@@ -55,4 +71,28 @@ message Match {
         repeated Round rounds = 3;
     }
     repeated Map maps = 3;
+}
+
+message Team {
+    message Head {
+        // vlr.gg/team/{team_id}
+        string team_id = 1;
+        string name = 2;
+        string tricode = 3;
+        string region = 4;
+    }
+    Head head = 1;
+
+    message Roster {
+        message Entry {
+            // vlr.gg/player/{player_id}
+            string player_id = 1;
+            string name = 2;
+            string real_name = 3;
+            RosterEntryRole role = 4;
+        }
+        repeated Entry players = 1;
+        repeated Entry staff = 2;
+    }
+    Roster roster = 2;
 }

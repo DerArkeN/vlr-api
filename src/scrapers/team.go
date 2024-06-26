@@ -24,8 +24,8 @@ type RosterEntry struct {
 	PlayerID   string `selector:"a" attr:"href"`
 	PlayerName string `selector:"a > .team-roster-item-name > .team-roster-item-name-alias"`
 	RealName   string `selector:"a > .team-roster-item-name > .team-roster-item-name-real"`
-	// IGL/Manager/Head Coach/Assistent Coach/etc.
-	AdditionalInformation string `selector:"a > .team-roster-item-name > .wf-tag.mod-light"`
+	// "" for Player or Manager/Head Coach/Assistent Coach/etc.
+	Role string `selector:"a > .team-roster-item-name > .wf-tag.mod-light"`
 }
 
 func ScrapeTeam(id string) (*Team, error) {

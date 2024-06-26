@@ -8,18 +8,28 @@ import "google/api/annotations.proto";
 import "google/protobuf/timestamp.proto";
 
 service Api {
+
     rpc GetMatchIds(GetMatchIdsRequest) returns (GetMatchIdsResponse) {
         option (google.api.http) = {
             post: "/v1/matchIds",
             body: "*"
         };
     }
+
     rpc GetMatch(GetMatchRequest) returns (GetMatchResponse) {
         option (google.api.http) = {
             post: "/v1/match",
             body: "*"
         };
     }
+
+    rpc GetTeam(GetTeamRequest) returns (GetTeamResponse) {
+        option (google.api.http) = {
+            post: "/v1/team",
+            body: "*"
+        };
+    }
+
 }
 
 /** 
@@ -56,4 +66,13 @@ message GetMatchRequest {
 
 message GetMatchResponse {
     Match match = 1;
+}
+
+// Returns a team by its id
+message GetTeamRequest {
+    string team_id = 1;
+}
+
+message GetTeamResponse {
+    Team team = 1;
 }
