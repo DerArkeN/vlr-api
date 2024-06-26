@@ -57,61 +57,68 @@ func ScrapeMatchDetail(id string) (*Match, error) {
 
 	c := colly.NewCollector()
 
-	var matchDetail *Match
+	var m *Match
 	c.OnHTML(".col.mod-3", func(e *colly.HTMLElement) {
-		matchDetail = &Match{}
-		e.Unmarshal(matchDetail)
-		if matchDetail.Super == nil || matchDetail.Versus == nil {
-			matchDetail = nil
+		m = &Match{}
+		e.Unmarshal(m)
+		if m.Super == nil || m.Versus == nil {
+			m = nil
 			return
 		}
 
-		matchDetail.Super.EventId = strings.Split(matchDetail.Super.EventId, "/")[2]
-		matchDetail.Super.EventName = utils.PrettifyString(matchDetail.Super.EventName)
-		matchDetail.Super.Stage = utils.PrettifyString(matchDetail.Super.Stage)
+		m.trimIds()
+		m.prettifyStrings()
 
-		matchDetail.Versus.Score = utils.PrettifyString(matchDetail.Versus.Score)
-		matchDetail.Versus.Score = strings.ReplaceAll(matchDetail.Versus.Score, "vs.", "")
-
-		matchDetail.Versus.Team1Id = strings.Split(matchDetail.Versus.Team1Id, "/")[2]
-		matchDetail.Versus.Team2Id = strings.Split(matchDetail.Versus.Team2Id, "/")[2]
-
-		for _, map_ := range matchDetail.Maps {
-			map_.Name = utils.PrettifyString(map_.Name)
-			map_.Name = strings.ReplaceAll(map_.Name, "PICK", "")
-		}
-
-		// remove all stats
-		for i, map_ := range matchDetail.Maps {
-			if map_.Name == "" {
-				matchDetail.Maps = append(matchDetail.Maps[:i], matchDetail.Maps[i+1:]...)
-			}
-		}
-
-		for i, map_ := range matchDetail.Maps {
-			if map_.Name == "" {
-				matchDetail.Maps = append(matchDetail.Maps[:i], matchDetail.Maps[i+1:]...)
-			}
-		}
-
-		for i, map_ := range matchDetail.Maps {
-			var filteredRounds []string
-			for _, round := range map_.Rounds {
-				if round != "" {
-					filteredRounds = append(filteredRounds, round)
-				}
-			}
-			matchDetail.Maps[i].Rounds = filteredRounds
-		}
+		m.extractAllStats()
+		m.filterEmptyRounds()
 	})
 
 	c.Visit("https://vlr.gg/" + id)
 
-	if matchDetail == nil {
+	if m == nil {
 		return nil, ErrNoMatch
 	}
 
-	return matchDetail, nil
+	return m, nil
+}
+
+func (m *Match) filterEmptyRounds() {
+	for i, map_ := range m.Maps {
+		var filteredRounds []string
+		for _, round := range map_.Rounds {
+			if round != "" {
+				filteredRounds = append(filteredRounds, round)
+			}
+		}
+		m.Maps[i].Rounds = filteredRounds
+	}
+}
+
+func (m *Match) extractAllStats() {
+	for i, map_ := range m.Maps {
+		if map_.Name == "" {
+			m.Maps = append(m.Maps[:i], m.Maps[i+1:]...)
+		}
+	}
+}
+
+func (m *Match) prettifyStrings() {
+	m.Super.EventName = utils.PrettifyString(m.Super.EventName)
+	m.Super.Stage = utils.PrettifyString(m.Super.Stage)
+
+	m.Versus.Score = utils.PrettifyString(m.Versus.Score)
+	m.Versus.Score = strings.ReplaceAll(m.Versus.Score, "vs.", "")
+
+	for _, map_ := range m.Maps {
+		map_.Name = utils.PrettifyString(map_.Name)
+		map_.Name = strings.ReplaceAll(map_.Name, "PICK", "")
+	}
+}
+
+func (m *Match) trimIds() {
+	m.Versus.Team1Id = strings.Split(m.Versus.Team1Id, "/")[2]
+	m.Versus.Team2Id = strings.Split(m.Versus.Team2Id, "/")[2]
+	m.Super.EventId = strings.Split(m.Super.EventId, "/")[2]
 }
 
 func (m *Match) GetUtcTime() (time.Time, error) {
