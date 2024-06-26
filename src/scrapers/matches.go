@@ -71,14 +71,7 @@ func scrapeMatches(url string) ([]*MatchIds, error) {
 		column.ForEach("div", func(_ int, colEntry *colly.HTMLElement) {
 			if colEntry.Attr("class") == "wf-label mod-large" {
 				dateStrings := strings.Split(colEntry.Text, "\t")
-				for _, dateString := range dateStrings {
-					if strings.Contains(dateString, ",") {
-						currDate = dateString
-						currDate = strings.ReplaceAll(currDate, "\n", "")
-						currDate = strings.TrimSpace(currDate)
-						break
-					}
-				}
+				currDate = extractDateString(dateStrings)
 			}
 
 			if colEntry.Attr("class") == "wf-card" {
@@ -122,6 +115,18 @@ func scrapeMatches(url string) ([]*MatchIds, error) {
 	return matches, nil
 }
 
+func extractDateString(dateStrings []string) string {
+	var date string
+	for _, dateString := range dateStrings {
+		if strings.Contains(dateString, ",") {
+			date = dateString
+			date = strings.ReplaceAll(date, "\n", "")
+			date = strings.TrimSpace(date)
+			break
+		}
+	}
+	return date
+}
 func (m *MatchIds) GetUtcTime(location *time.Location) (time.Time, error) {
 	if m.Time == "TBD" {
 		m.Time = "00:00 AM"
