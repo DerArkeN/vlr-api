@@ -20,11 +20,11 @@ const (
 
 var ErrNoMatchIds = errors.New("no matches found")
 
-type MatchIds struct {
+type MatchId struct {
 	MatchId string
-	State   *State `selector:".match-item-eta"`
-	Date    string `selector:".match-item-date"`
-	Time    string `selector:".match-item-time"`
+	State   *MatchId_State `selector:".match-item-eta"`
+	Date    string         `selector:".match-item-date"`
+	Time    string         `selector:".match-item-time"`
 	// Teams  []*Team `selector:".match-item-vs > .match-item-vs-team"`
 	// Note   string  `selector:".match-item-note"`
 	// Vods   []*Vod  `selector:".match-item-vod"`
@@ -37,7 +37,7 @@ type MatchIds struct {
 // 	Score string `selector:".match-item-vs-team-score"`
 // }
 
-type State struct {
+type MatchId_State struct {
 	State string `selector:".ml > .ml-status"`
 	ETA   string `selector:".ml > .ml-eta"`
 }
@@ -48,23 +48,23 @@ type State struct {
 // }
 
 // Fetches https://vlr.gg/matches/results
-func ScrapeResults(page int) ([]*MatchIds, error) {
+func ScrapeResultIds(page int) ([]*MatchId, error) {
 	return scrapeMatches("https://vlr.gg/matches/results/?page=" + fmt.Sprint(page))
 }
 
 // Fetches https://vlr.gg/matches
-func ScrapeMatches(page int) ([]*MatchIds, error) {
+func ScrapeMatchIds(page int) ([]*MatchId, error) {
 	return scrapeMatches("https://vlr.gg/matches/?page=" + fmt.Sprint(page))
 }
 
-func ScrapeEventMatches(eventId string) ([]*MatchIds, error) {
+func ScrapeEventMatchIds(eventId string) ([]*MatchId, error) {
 	return scrapeMatches("https://www.vlr.gg/event/matches/" + eventId + "/?series_id=all&group=all")
 }
 
-func scrapeMatches(url string) ([]*MatchIds, error) {
+func scrapeMatches(url string) ([]*MatchId, error) {
 	c := colly.NewCollector()
 
-	matches := []*MatchIds{}
+	matches := []*MatchId{}
 
 	c.OnHTML(".col", func(column *colly.HTMLElement) {
 		var currDate string
@@ -76,7 +76,7 @@ func scrapeMatches(url string) ([]*MatchIds, error) {
 
 			if colEntry.Attr("class") == "wf-card" {
 				colEntry.ForEach("a.match-item", func(_ int, matchEntry *colly.HTMLElement) {
-					match := &MatchIds{}
+					match := &MatchId{}
 					err := matchEntry.Unmarshal(match)
 					if err != nil {
 						log.Println("Error unmarshalling match: ", err)
@@ -127,7 +127,7 @@ func extractDateString(dateStrings []string) string {
 	}
 	return date
 }
-func (m *MatchIds) GetUtcTime(location *time.Location) (time.Time, error) {
+func (m *MatchId) GetUtcTime(location *time.Location) (time.Time, error) {
 	if m.Time == "TBD" {
 		m.Time = "00:00 AM"
 	}

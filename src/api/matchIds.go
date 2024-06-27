@@ -48,20 +48,20 @@ func GetMatchIds(request *proto.GetMatchIdsRequest) ([]string, error) {
 }
 
 func getLiveMatches(opt *proto.GetMatchIdsRequest_Options) ([]string, error) {
-	var matchIds []*scrapers.MatchIds
+	var matchIds []*scrapers.MatchId
 	page := 1
 	for {
-		var newMatchIds []*scrapers.MatchIds
+		var newMatchIds []*scrapers.MatchId
 		var err error
 		if opt != nil && opt.EventId != "" {
-			newMatchIds, err = scrapers.ScrapeEventMatches(opt.EventId)
+			newMatchIds, err = scrapers.ScrapeEventMatchIds(opt.EventId)
 			if err != nil {
 				return nil, err
 			}
 			matchIds = append(matchIds, newMatchIds...)
 			break
 		} else {
-			newMatchIds, err = scrapers.ScrapeMatches(page)
+			newMatchIds, err = scrapers.ScrapeMatchIds(page)
 		}
 		if err == scrapers.ErrNoMatchIds {
 			break
@@ -114,13 +114,13 @@ func getUpcomingMatchIds(from time.Time, to time.Time, opt *proto.GetMatchIdsReq
 		return nil, err
 	}
 
-	var matchIds []*scrapers.MatchIds
+	var matchIds []*scrapers.MatchId
 	page := 1
 	for {
-		var newMatchIds []*scrapers.MatchIds
+		var newMatchIds []*scrapers.MatchId
 		var err error
 		if opt != nil && opt.EventId != "" {
-			newMatchIds, err = scrapers.ScrapeEventMatches(opt.EventId)
+			newMatchIds, err = scrapers.ScrapeEventMatchIds(opt.EventId)
 			if err != nil {
 				return nil, err
 			}
@@ -129,7 +129,7 @@ func getUpcomingMatchIds(from time.Time, to time.Time, opt *proto.GetMatchIdsReq
 			to = time.Time{}
 			break
 		} else {
-			newMatchIds, err = scrapers.ScrapeMatches(page)
+			newMatchIds, err = scrapers.ScrapeMatchIds(page)
 		}
 		if err == scrapers.ErrNoMatchIds {
 			break
@@ -190,13 +190,13 @@ func getCompletedMatchIds(from time.Time, to time.Time, opt *proto.GetMatchIdsRe
 		return nil, err
 	}
 
-	var matchIds []*scrapers.MatchIds
+	var matchIds []*scrapers.MatchId
 	page := 1
 	for {
-		var newMatchIds []*scrapers.MatchIds
+		var newMatchIds []*scrapers.MatchId
 		var err error
 		if opt != nil && opt.EventId != "" {
-			newMatchIds, err = scrapers.ScrapeEventMatches(opt.EventId)
+			newMatchIds, err = scrapers.ScrapeEventMatchIds(opt.EventId)
 			if err != nil {
 				return nil, err
 			}
@@ -205,7 +205,7 @@ func getCompletedMatchIds(from time.Time, to time.Time, opt *proto.GetMatchIdsRe
 			to = time.Time{}
 			break
 		} else {
-			newMatchIds, err = scrapers.ScrapeResults(page)
+			newMatchIds, err = scrapers.ScrapeResultIds(page)
 		}
 		if err == scrapers.ErrNoMatchIds {
 			break
@@ -231,7 +231,7 @@ func getCompletedMatchIds(from time.Time, to time.Time, opt *proto.GetMatchIdsRe
 	return getIdsByStateAndTime(matchIds, scrapers.MATCH_STATE_COMPLETED, loc, from, to)
 }
 
-func getIdsByStateAndTime(matches []*scrapers.MatchIds, state scrapers.MatchState, loc *time.Location, from time.Time, to time.Time) ([]string, error) {
+func getIdsByStateAndTime(matches []*scrapers.MatchId, state scrapers.MatchState, loc *time.Location, from time.Time, to time.Time) ([]string, error) {
 	var ids []string
 
 	for _, match := range matches {
