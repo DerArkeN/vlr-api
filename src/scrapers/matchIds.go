@@ -3,7 +3,6 @@ package scrapers
 import (
 	"errors"
 	"fmt"
-	"log"
 	"strings"
 	"time"
 
@@ -49,23 +48,22 @@ type MatchId_State struct {
 
 // Fetches https://vlr.gg/matches/results
 func ScrapeResultIds(page int) ([]*MatchId, error) {
-	return scrapeMatches("https://vlr.gg/matches/results/?page=" + fmt.Sprint(page))
+	return scrapeMatchIds("https://vlr.gg/matches/results/?page=" + fmt.Sprint(page))
 }
 
 // Fetches https://vlr.gg/matches
 func ScrapeMatchIds(page int) ([]*MatchId, error) {
-	return scrapeMatches("https://vlr.gg/matches/?page=" + fmt.Sprint(page))
+	return scrapeMatchIds("https://vlr.gg/matches/?page=" + fmt.Sprint(page))
 }
 
 func ScrapeEventMatchIds(eventId string) ([]*MatchId, error) {
-	return scrapeMatches("https://www.vlr.gg/event/matches/" + eventId + "/?series_id=all&group=all")
+	return scrapeMatchIds("https://www.vlr.gg/event/matches/" + eventId + "/?series_id=all&group=all")
 }
 
-func scrapeMatches(url string) ([]*MatchId, error) {
+func scrapeMatchIds(url string) ([]*MatchId, error) {
 	c := colly.NewCollector()
 
-	matches := []*MatchId{}
-
+	matchIds := []*MatchId{}
 	c.OnHTML(".col", func(column *colly.HTMLElement) {
 		var currDate string
 		column.ForEach("div", func(_ int, colEntry *colly.HTMLElement) {
@@ -76,19 +74,18 @@ func scrapeMatches(url string) ([]*MatchId, error) {
 
 			if colEntry.Attr("class") == "wf-card" {
 				colEntry.ForEach("a.match-item", func(_ int, matchEntry *colly.HTMLElement) {
-					match := &MatchId{}
-					err := matchEntry.Unmarshal(match)
+					m := &MatchId{}
+					err := matchEntry.Unmarshal(m)
 					if err != nil {
-						log.Println("Error unmarshalling match: ", err)
 						return
 					}
 
 					// the date is outside of the match element
-					match.Date = currDate
+					m.Date = currDate
 
 					// head attribute can't be unmarshalled
-					match.MatchId = strings.Split(matchEntry.Attr("href"), "/")[1]
-					if match.MatchId == "" {
+					m.MatchId = strings.Split(matchEntry.Attr("href"), "/")[1]
+					if m.MatchId == "" {
 						return
 					}
 
@@ -96,23 +93,22 @@ func scrapeMatches(url string) ([]*MatchId, error) {
 					// strings := strings.Split(match.Event, "\t")
 					// match.Event = strings[len(strings)-1]
 
-					matches = append(matches, match)
+					matchIds = append(matchIds, m)
 				})
 			}
 		})
 	})
 
 	err := c.Visit(url)
-
 	if err != nil {
 		return nil, err
 	}
 
-	if len(matches) == 0 {
+	if len(matchIds) == 0 {
 		return nil, ErrNoMatchIds
 	}
 
-	return matches, nil
+	return matchIds, nil
 }
 
 func extractDateString(dateStrings []string) string {
