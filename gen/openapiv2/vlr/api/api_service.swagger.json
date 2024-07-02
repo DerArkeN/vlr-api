@@ -16,6 +16,38 @@
     "application/json"
   ],
   "paths": {
+    "/v1/eventIds": {
+      "post": {
+        "operationId": "Api_GetEventIds",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiGetEventIdsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/apiGetEventIdsRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Api"
+        ]
+      }
+    },
     "/v1/match": {
       "post": {
         "operationId": "Api_GetMatch",
@@ -234,6 +266,43 @@
           "items": {
             "type": "object",
             "$ref": "#/definitions/RosterEntry"
+          }
+        }
+      }
+    },
+    "apiEventState": {
+      "type": "string",
+      "enum": [
+        "EVENT_STATE_UNSPECIFIED",
+        "EVENT_STATE_ONGOING",
+        "EVENT_STATE_UPCOMING",
+        "EVENT_STATE_COMPLETED"
+      ],
+      "default": "EVENT_STATE_UNSPECIFIED"
+    },
+    "apiGetEventIdsRequest": {
+      "type": "object",
+      "properties": {
+        "state": {
+          "$ref": "#/definitions/apiEventState"
+        },
+        "from": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "to": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "apiGetEventIdsResponse": {
+      "type": "object",
+      "properties": {
+        "eventIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
           }
         }
       }

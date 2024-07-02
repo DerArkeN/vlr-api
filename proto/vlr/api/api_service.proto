@@ -30,6 +30,12 @@ service Api {
         };
     }
 
+    rpc GetEventIds(GetEventIdsRequest) returns (GetEventIdsResponse) {
+        option (google.api.http) = {
+            post: "/v1/eventIds",
+            body: "*"
+        };
+    }
 }
 
 /** 
@@ -75,4 +81,14 @@ message GetTeamRequest {
 
 message GetTeamResponse {
     Team team = 1;
+}
+
+message GetEventIdsRequest {
+    EventState state = 1;
+    google.protobuf.Timestamp from = 2;
+    google.protobuf.Timestamp to = 3;
+}
+
+message GetEventIdsResponse {
+    repeated string event_ids = 1;
 }

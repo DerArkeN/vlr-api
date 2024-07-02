@@ -113,7 +113,8 @@ func (e *EventId) getYearFromTitle() int {
 	re := regexp.MustCompile(`\d{4}`)
 	yearString := re.FindString(e.Title)
 	year, err := strconv.Atoi(yearString)
-	if err != nil || year < 2020 {
+	const valorantRelease = 2020
+	if err != nil || year < valorantRelease {
 		year = 1970
 	}
 	return year

@@ -22,6 +22,7 @@ const (
 	Api_GetMatchIds_FullMethodName = "/vlr.api.Api/GetMatchIds"
 	Api_GetMatch_FullMethodName    = "/vlr.api.Api/GetMatch"
 	Api_GetTeam_FullMethodName     = "/vlr.api.Api/GetTeam"
+	Api_GetEventIds_FullMethodName = "/vlr.api.Api/GetEventIds"
 )
 
 // ApiClient is the client API for Api service.
@@ -31,6 +32,7 @@ type ApiClient interface {
 	GetMatchIds(ctx context.Context, in *GetMatchIdsRequest, opts ...grpc.CallOption) (*GetMatchIdsResponse, error)
 	GetMatch(ctx context.Context, in *GetMatchRequest, opts ...grpc.CallOption) (*GetMatchResponse, error)
 	GetTeam(ctx context.Context, in *GetTeamRequest, opts ...grpc.CallOption) (*GetTeamResponse, error)
+	GetEventIds(ctx context.Context, in *GetEventIdsRequest, opts ...grpc.CallOption) (*GetEventIdsResponse, error)
 }
 
 type apiClient struct {
@@ -71,6 +73,16 @@ func (c *apiClient) GetTeam(ctx context.Context, in *GetTeamRequest, opts ...grp
 	return out, nil
 }
 
+func (c *apiClient) GetEventIds(ctx context.Context, in *GetEventIdsRequest, opts ...grpc.CallOption) (*GetEventIdsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetEventIdsResponse)
+	err := c.cc.Invoke(ctx, Api_GetEventIds_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ApiServer is the server API for Api service.
 // All implementations must embed UnimplementedApiServer
 // for forward compatibility
@@ -78,6 +90,7 @@ type ApiServer interface {
 	GetMatchIds(context.Context, *GetMatchIdsRequest) (*GetMatchIdsResponse, error)
 	GetMatch(context.Context, *GetMatchRequest) (*GetMatchResponse, error)
 	GetTeam(context.Context, *GetTeamRequest) (*GetTeamResponse, error)
+	GetEventIds(context.Context, *GetEventIdsRequest) (*GetEventIdsResponse, error)
 	mustEmbedUnimplementedApiServer()
 }
 
@@ -93,6 +106,9 @@ func (UnimplementedApiServer) GetMatch(context.Context, *GetMatchRequest) (*GetM
 }
 func (UnimplementedApiServer) GetTeam(context.Context, *GetTeamRequest) (*GetTeamResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetTeam not implemented")
+}
+func (UnimplementedApiServer) GetEventIds(context.Context, *GetEventIdsRequest) (*GetEventIdsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetEventIds not implemented")
 }
 func (UnimplementedApiServer) mustEmbedUnimplementedApiServer() {}
 
@@ -161,6 +177,24 @@ func _Api_GetTeam_Handler(srv interface{}, ctx context.Context, dec func(interfa
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Api_GetEventIds_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetEventIdsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServer).GetEventIds(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Api_GetEventIds_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServer).GetEventIds(ctx, req.(*GetEventIdsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Api_ServiceDesc is the grpc.ServiceDesc for Api service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -179,6 +213,10 @@ var Api_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetTeam",
 			Handler:    _Api_GetTeam_Handler,
+		},
+		{
+			MethodName: "GetEventIds",
+			Handler:    _Api_GetEventIds_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
