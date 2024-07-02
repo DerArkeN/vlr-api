@@ -30,3 +30,11 @@ func (s *Server) GetTeam(ctx context.Context, in *proto.GetTeamRequest) (*proto.
 	}
 	return &proto.GetTeamResponse{Team: team}, nil
 }
+
+func (s *Server) GetEventIds(ctx context.Context, in *proto.GetEventIdsRequest) (*proto.GetEventIdsResponse, error) {
+	ids, err := api.GetEventIds(in)
+	if err != nil {
+		return nil, err
+	}
+	return &proto.GetEventIdsResponse{EventIds: ids}, nil
+}

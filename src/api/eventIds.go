@@ -7,7 +7,7 @@ import (
 	proto "github.com/derarken/vlr-api/gen/vlr/api"
 )
 
-func GetEventids(request *proto.GetEventIdsRequest) ([]string, error) {
+func GetEventIds(request *proto.GetEventIdsRequest) ([]string, error) {
 	switch request.State {
 	case proto.EventState_EVENT_STATE_ONGOING, proto.EventState_EVENT_STATE_UPCOMING:
 		return getUpcomingOrOngoingEventIds()
