@@ -1,8 +1,17 @@
 package utils
 
 import (
+	"errors"
 	"strconv"
 	"strings"
+	"time"
+
+	"google.golang.org/protobuf/types/known/timestamppb"
+)
+
+var (
+	ErrFromAfterTo = errors.New("from time must not be after to time")
+	ErrToInFuture  = errors.New("to time must not be in the future when state is completed")
 )
 
 func PrettifyString(input string) string {
@@ -24,4 +33,67 @@ func GetScoreForRound(round string) (int, int, error) {
 		return 0, 0, err
 	}
 	return score1, score2, nil
+}
+
+func ShouldValidateTime(loc *time.Location, from time.Time, to time.Time) bool {
+	return loc != nil && !from.IsZero() && !to.IsZero()
+}
+
+func IsTimeInRange(from time.Time, to time.Time, time time.Time) bool {
+	return time.UnixMilli() >= from.UnixMilli() && time.UnixMilli() <= to.UnixMilli()
+}
+
+func ValidateCompletedTimes(frompb *timestamppb.Timestamp, topb *timestamppb.Timestamp) (time.Time, time.Time, error) {
+	from := time.Time{}
+	if frompb != nil {
+		from = frompb.AsTime()
+	}
+	to := time.Time{}
+	if topb != nil {
+		to = topb.AsTime()
+	}
+
+	if from.IsZero() && to.IsZero() {
+		to = time.Now()
+		from = to.Add(time.Hour * -24)
+	}
+	if from.IsZero() && !to.IsZero() {
+		from = to.Add(time.Hour * -24)
+	}
+	if !from.IsZero() && to.IsZero() {
+		to = time.Now()
+	}
+	if from.After(to) {
+		return time.Time{}, time.Time{}, ErrFromAfterTo
+	}
+	if to.After(time.Now()) {
+		return time.Time{}, time.Time{}, ErrToInFuture
+	}
+	return from, to, nil
+}
+
+func ValidateUpcomingTimes(frompb *timestamppb.Timestamp, topb *timestamppb.Timestamp) (time.Time, time.Time, error) {
+	from := time.Time{}
+	if frompb != nil {
+		from = frompb.AsTime()
+	}
+	to := time.Time{}
+	if topb != nil {
+		to = topb.AsTime()
+	}
+
+	if from.IsZero() && to.IsZero() {
+		from = time.Now()
+		to = from.Add(time.Hour * 24)
+	}
+	if from.IsZero() && !to.IsZero() {
+		from = time.Now()
+	}
+	if !from.IsZero() && to.IsZero() {
+		to = from.Add(time.Hour * 24)
+	}
+	if from.After(to) {
+		return time.Time{}, time.Time{}, ErrFromAfterTo
+	}
+	return from, to, nil
 }

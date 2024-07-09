@@ -16,6 +16,14 @@ const (
 	completedContainer = "#wrapper > div.col-container > div > div.events-container > div:nth-child(2)"
 )
 
+type EventState string
+
+const (
+	EVENT_STATE_ONGOING   EventState = "ongoing"
+	EVENT_STATE_UPCOMING  EventState = "upcoming"
+	EVENT_STATE_COMPLETED EventState = "completed"
+)
+
 var (
 	ErrNoEventIds = fmt.Errorf("no events found")
 )
@@ -40,6 +48,19 @@ func ScrapeUpcomingOrOngoingEventIds(page int) ([]*EventId, error) {
 
 func ScrapeCompletedEventIds(page int) ([]*EventId, error) {
 	return scrapeEventIds(completedContainer, page)
+}
+
+func (e *EventId) GetStartAndEndUtc(loc *time.Location) (time.Time, time.Time, error) {
+	startLoc, err := time.ParseInLocation("2006-01-02", e.Start.Format("2006-01-02"), loc)
+	if err != nil {
+		return time.Time{}, time.Time{}, err
+	}
+	endLoc, err := time.ParseInLocation("2006-01-02", e.End.Format("2006-01-02"), loc)
+	if err != nil {
+		return time.Time{}, time.Time{}, err
+	}
+
+	return startLoc.UTC(), endLoc.UTC(), nil
 }
 
 func scrapeEventIds(containerQuery string, page int) ([]*EventId, error) {

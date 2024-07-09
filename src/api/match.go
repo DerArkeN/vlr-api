@@ -9,6 +9,10 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
+type MatchFactory struct{}
+
+var matchFactory = &MatchFactory{}
+
 func GetMatch(matchId string) (*proto.Match, error) {
 	scrapedMatch, err := scrapers.ScrapeMatchDetail(matchId)
 	if err != nil {
@@ -27,14 +31,14 @@ func GetMatch(matchId string) (*proto.Match, error) {
 		return nil, err
 	}
 
-	maps, err := getMaps(scrapedMatch.Maps)
+	maps, err := matchFactory.getMaps(scrapedMatch.Maps)
 	if err != nil {
 		return nil, err
 	}
 
 	match := &proto.Match{
 		Head: &proto.Match_Head{
-			State:   getProtoMatchState(scrapedMatch.Versus.Notes),
+			State:   matchFactory.getProtoMatchState(scrapedMatch.Versus.Notes),
 			MatchId: matchId,
 			Event: &proto.Match_Head_Event{
 				EventId: scrapedMatch.Super.EventId,
@@ -61,10 +65,10 @@ func GetMatch(matchId string) (*proto.Match, error) {
 	return match, nil
 }
 
-func getMaps(maps []*scrapers.Map) ([]*proto.Match_Map, error) {
+func (f *MatchFactory) getMaps(maps []*scrapers.Map) ([]*proto.Match_Map, error) {
 	var protoMaps []*proto.Match_Map
 	for _, map_ := range maps {
-		protoRounds, err := getRounds(map_.Rounds)
+		protoRounds, err := f.getRounds(map_.Rounds)
 		if err != nil {
 			return nil, err
 		}
@@ -76,7 +80,7 @@ func getMaps(maps []*scrapers.Map) ([]*proto.Match_Map, error) {
 	return protoMaps, nil
 }
 
-func getRounds(rounds []string) ([]*proto.Match_Map_Round, error) {
+func (f *MatchFactory) getRounds(rounds []string) ([]*proto.Match_Map_Round, error) {
 	var protoRounds []*proto.Match_Map_Round
 	for _, round := range rounds {
 		scores := strings.Split(round, "-")
@@ -96,7 +100,7 @@ func getRounds(rounds []string) ([]*proto.Match_Map_Round, error) {
 	return protoRounds, nil
 }
 
-func getProtoMatchState(notes []string) proto.MatchState {
+func (f *MatchFactory) getProtoMatchState(notes []string) proto.MatchState {
 	for _, note := range notes {
 		if note == "live" {
 			return proto.MatchState_MATCH_STATE_LIVE

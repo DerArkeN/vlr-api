@@ -7,6 +7,10 @@ import (
 	"github.com/derarken/vlr-api/src/scrapers"
 )
 
+type TeamFactory struct{}
+
+var teamFactory = &TeamFactory{}
+
 func GetTeam(teamId string) (*proto.Team, error) {
 	scrapedTeam, err := scrapers.ScrapeTeam(teamId)
 	if err != nil {
@@ -21,15 +25,15 @@ func GetTeam(teamId string) (*proto.Team, error) {
 			Region:  scrapedTeam.Region,
 		},
 		Roster: &proto.Team_Roster{
-			Players: getRosterEntries(scrapedTeam.Players),
-			Staff:   getRosterEntries(scrapedTeam.Staff),
+			Players: teamFactory.getRosterEntries(scrapedTeam.Players),
+			Staff:   teamFactory.getRosterEntries(scrapedTeam.Staff),
 		},
 	}
 
 	return team, nil
 }
 
-func getRosterEntries(entries []*scrapers.RosterEntry) []*proto.Team_Roster_Entry {
+func (f *TeamFactory) getRosterEntries(entries []*scrapers.RosterEntry) []*proto.Team_Roster_Entry {
 	rosterEntries := make([]*proto.Team_Roster_Entry, 0, len(entries))
 
 	for _, player := range entries {
@@ -37,14 +41,14 @@ func getRosterEntries(entries []*scrapers.RosterEntry) []*proto.Team_Roster_Entr
 			PlayerId: player.PlayerID,
 			Name:     player.PlayerName,
 			RealName: player.RealName,
-			Role:     getRole(player.Role),
+			Role:     f.getRole(player.Role),
 		})
 	}
 
 	return rosterEntries
 }
 
-func getRole(role string) proto.RosterEntryRole {
+func (f *TeamFactory) getRole(role string) proto.RosterEntryRole {
 	switch strings.ToLower(role) {
 	case "inactive":
 		return proto.RosterEntryRole_ROSTER_ENTRY_ROLE_INACTIVE
