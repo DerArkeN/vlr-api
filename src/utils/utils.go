@@ -43,7 +43,7 @@ func IsTimeInRange(from time.Time, to time.Time, time time.Time) bool {
 	return time.UnixMilli() >= from.UnixMilli() && time.UnixMilli() <= to.UnixMilli()
 }
 
-func ValidateCompletedTimes(frompb *timestamppb.Timestamp, topb *timestamppb.Timestamp) (time.Time, time.Time, error) {
+func ValidateCompletedTimes(frompb *timestamppb.Timestamp, topb *timestamppb.Timestamp, duration time.Duration) (time.Time, time.Time, error) {
 	from := time.Time{}
 	if frompb != nil {
 		from = frompb.AsTime()
@@ -55,10 +55,10 @@ func ValidateCompletedTimes(frompb *timestamppb.Timestamp, topb *timestamppb.Tim
 
 	if from.IsZero() && to.IsZero() {
 		to = time.Now()
-		from = to.Add(time.Hour * -24)
+		from = to.Add(duration)
 	}
 	if from.IsZero() && !to.IsZero() {
-		from = to.Add(time.Hour * -24)
+		from = to.Add(duration)
 	}
 	if !from.IsZero() && to.IsZero() {
 		to = time.Now()
@@ -72,7 +72,7 @@ func ValidateCompletedTimes(frompb *timestamppb.Timestamp, topb *timestamppb.Tim
 	return from, to, nil
 }
 
-func ValidateUpcomingTimes(frompb *timestamppb.Timestamp, topb *timestamppb.Timestamp) (time.Time, time.Time, error) {
+func ValidateUpcomingTimes(frompb *timestamppb.Timestamp, topb *timestamppb.Timestamp, duration time.Duration) (time.Time, time.Time, error) {
 	from := time.Time{}
 	if frompb != nil {
 		from = frompb.AsTime()
@@ -84,13 +84,13 @@ func ValidateUpcomingTimes(frompb *timestamppb.Timestamp, topb *timestamppb.Time
 
 	if from.IsZero() && to.IsZero() {
 		from = time.Now()
-		to = from.Add(time.Hour * 24)
+		to = from.Add(duration)
 	}
 	if from.IsZero() && !to.IsZero() {
 		from = time.Now()
 	}
 	if !from.IsZero() && to.IsZero() {
-		to = from.Add(time.Hour * 24)
+		to = from.Add(duration)
 	}
 	if from.After(to) {
 		return time.Time{}, time.Time{}, ErrFromAfterTo

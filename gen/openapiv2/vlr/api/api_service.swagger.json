@@ -36,7 +36,7 @@
         "parameters": [
           {
             "name": "body",
-            "description": "Timestamps are in UTC, and are used to filter the events by their start time\n\nIf the state is EVENT_STATE_ONGOING, the *from* and *to* fields are ignored\nIf the state is EVENT_STATE_UPCOMING and no *from* field is provided, the *from* field is set to the current time, if no *to* field is provided, the *to* field is set to the *from* field +24h\nIf the state is EVENT_STATE_COMPLETED and no *from* field is provided, the *from* field is is set to the *to* field -24h, if no *to* field is provided, the *to* field is set to the current time",
+            "description": "Timestamps are in UTC, and are used to filter the events by their start time\n\nIf the state is EVENT_STATE_ONGOING, the *from* and *to* fields are ignored\nIf the state is EVENT_STATE_UPCOMING and no *from* field is provided, the *from* field is set to the current time, if no *to* field is provided, the *to* field is set to the *from* field +7d\nIf the state is EVENT_STATE_COMPLETED and no *from* field is provided, the *from* field is is set to the *to* field -7d, if no *to* field is provided, the *to* field is set to the current time",
             "in": "body",
             "required": true,
             "schema": {
@@ -296,7 +296,7 @@
           "format": "date-time"
         }
       },
-      "description": "Timestamps are in UTC, and are used to filter the events by their start time\n\nIf the state is EVENT_STATE_ONGOING, the *from* and *to* fields are ignored\nIf the state is EVENT_STATE_UPCOMING and no *from* field is provided, the *from* field is set to the current time, if no *to* field is provided, the *to* field is set to the *from* field +24h\nIf the state is EVENT_STATE_COMPLETED and no *from* field is provided, the *from* field is is set to the *to* field -24h, if no *to* field is provided, the *to* field is set to the current time",
+      "description": "Timestamps are in UTC, and are used to filter the events by their start time\n\nIf the state is EVENT_STATE_ONGOING, the *from* and *to* fields are ignored\nIf the state is EVENT_STATE_UPCOMING and no *from* field is provided, the *from* field is set to the current time, if no *to* field is provided, the *to* field is set to the *from* field +7d\nIf the state is EVENT_STATE_COMPLETED and no *from* field is provided, the *from* field is is set to the *to* field -7d, if no *to* field is provided, the *to* field is set to the current time",
       "title": "* \nReturns a list of event ids that match the given criteria"
     },
     "apiGetEventIdsResponse": {

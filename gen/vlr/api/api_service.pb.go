@@ -347,8 +347,8 @@ func (x *GetTeamResponse) GetTeam() *Team {
 // # Timestamps are in UTC, and are used to filter the events by their start time
 //
 // If the state is EVENT_STATE_ONGOING, the *from* and *to* fields are ignored
-// If the state is EVENT_STATE_UPCOMING and no *from* field is provided, the *from* field is set to the current time, if no *to* field is provided, the *to* field is set to the *from* field +24h
-// If the state is EVENT_STATE_COMPLETED and no *from* field is provided, the *from* field is is set to the *to* field -24h, if no *to* field is provided, the *to* field is set to the current time
+// If the state is EVENT_STATE_UPCOMING and no *from* field is provided, the *from* field is set to the current time, if no *to* field is provided, the *to* field is set to the *from* field +7d
+// If the state is EVENT_STATE_COMPLETED and no *from* field is provided, the *from* field is is set to the *to* field -7d, if no *to* field is provided, the *to* field is set to the current time
 type GetEventIdsRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

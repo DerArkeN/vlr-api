@@ -13,20 +13,22 @@ type MatchIdFactory struct{}
 
 var matchIdFactory = &MatchIdFactory{}
 
+const matchIdsDefaultDuration = 24 * time.Hour
+
 func GetMatchIds(request *proto.GetMatchIdsRequest) ([]string, error) {
 	switch request.State {
 	case proto.MatchState_MATCH_STATE_LIVE:
 		return matchIdFactory.getLiveMatches(request.Options)
 
 	case proto.MatchState_MATCH_STATE_UPCOMING:
-		from, to, err := utils.ValidateUpcomingTimes(request.From, request.To)
+		from, to, err := utils.ValidateUpcomingTimes(request.From, request.To, matchIdsDefaultDuration)
 		if err != nil {
 			return nil, err
 		}
 		return matchIdFactory.getUpcomingMatchIds(from, to, request.Options)
 
 	case proto.MatchState_MATCH_STATE_COMPLETED:
-		from, to, err := utils.ValidateCompletedTimes(request.From, request.To)
+		from, to, err := utils.ValidateCompletedTimes(request.From, request.To, matchIdsDefaultDuration)
 		if err != nil {
 			return nil, err
 		}

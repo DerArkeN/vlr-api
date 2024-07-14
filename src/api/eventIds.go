@@ -13,20 +13,22 @@ type EventIdFactory struct{}
 
 var eventIdFactory = &EventIdFactory{}
 
+const eventIdsDefaultDuration = 7 * time.Hour * 24
+
 func GetEventIds(request *proto.GetEventIdsRequest) ([]string, error) {
 	switch request.State {
 	case proto.EventState_EVENT_STATE_ONGOING:
 		return eventIdFactory.getOngoingEventIds()
 
 	case proto.EventState_EVENT_STATE_UPCOMING:
-		from, to, err := utils.ValidateUpcomingTimes(request.From, request.To)
+		from, to, err := utils.ValidateUpcomingTimes(request.From, request.To, eventIdsDefaultDuration)
 		if err != nil {
 			return nil, err
 		}
 		return eventIdFactory.getUpcomingEventIds(from, to)
 
 	case proto.EventState_EVENT_STATE_COMPLETED:
-		from, to, err := utils.ValidateCompletedTimes(request.From, request.To)
+		from, to, err := utils.ValidateCompletedTimes(request.From, request.To, eventIdsDefaultDuration)
 		if err != nil {
 			return nil, err
 		}
