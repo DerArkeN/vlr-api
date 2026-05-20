@@ -15,7 +15,7 @@ To run this project, you need to have Docker installed on your machine. Follow e
 
 ### Build yourself from the main branch:
 
-1. Clone the repository: `git clone https://github.com/DerArkeN/vlr-api.git`
+1. Clone the repository: `git clone https://github.com/truearken/vlr-api.git`
 2. Navigate to the project directory: `cd vlr-api`
 3. Build the Docker image: `docker build -t [image name] .`
 4. Run the Docker container: `docker run -p 8080:8080 -p 8090:8090 [image name]`
